@@ -1,0 +1,12 @@
+export enum ACCESS_LEVEL_TYPE {
+    APPLICANT = 'APPLICANT',
+    MEMBER = 'MEMBER',
+    ADMIN = 'ADMIN',
+    SYS_ADMIN = 'SYS_ADMIN',
+    MASTER = 'MASTER'
+}
+
+export enum STATUS_TYPE {
+    ACTIVE = 'ACTIVE',
+    INACTIVE = 'INACTIVE'
+}

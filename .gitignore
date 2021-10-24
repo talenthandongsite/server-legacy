@@ -1,0 +1,15 @@
+node_modules/
+coverage/
+dist/
+.tmp/
+*.d.ts
+*.log
+*.tgz
+*.yaml
+.idea/
+.DS_Store
+package-lock.json
+yarn.lock
+
+**/*.csv
+
