@@ -13,7 +13,7 @@ pipeline {
         AWS_SECRET_ACCESS_KEY = credentials('awsSecretAccessKey')
         AWS_DEFAULT_REGION = 'ap-northeast-2'
         HOME = '.' // Avoid npm root owned
-        GIT_URL= 'https://github.com/doooooooong/talent-server'
+        GIT_URL= 'https://github.com/talenthandongsite/server'
         APP_NAME= 'talent-server'
     }
     
@@ -29,7 +29,7 @@ pipeline {
 
                 git url: "${GIT_URL}",
                     branch: "master",
-                    credentialsId: 'ae0b1a58-e10c-4b56-9798-21d9dfb03ad3'
+                    credentialsId: 'git-jenkins'
             }
 
 
