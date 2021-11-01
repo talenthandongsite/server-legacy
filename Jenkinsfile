@@ -73,7 +73,7 @@ pipeline {
                 sh "docker container ls -a -fname=talent-server -q | xargs -r docker container rm"
                 sh "docker images --no-trunc --all --quiet --filter='dangling=true' | xargs --no-run-if-empty docker rmi"
                 sh """
-                docker run -p 3000:3000 -d --name ${APP_NAME} ${APP_NAME}
+                docker run -p 3000:3000 --network talent-private --expose 3000 -d --name ${APP_NAME} ${APP_NAME}
                 """
 
             }
