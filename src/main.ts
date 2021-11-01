@@ -10,7 +10,7 @@ import { json } from 'express';
 import { Repository } from 'typeorm';
 
 import { MemberRouter, NdxBookRouter, TicketRouter, UtilRouter } from './routers';
-import { ConfigService, OrmService, AuthService, ScrapService, HisnetScrapService, NdxBookParseService } from './services';
+import { ConfigService, OrmService, AuthService, HisnetScrapService, NdxBookParseService } from './services';
 import { globalErrorHandler } from './error-handlers';
 import { AccessLevelGuardMiddleware, endpointAccessLogMiddleware } from "./middlewares";
 
@@ -25,21 +25,21 @@ export function main(options: MainOptions) {
 	// TODO: pass env to config service
 	const configService: ConfigService = new ConfigService();
 
-	const ormService: OrmService = new OrmService(configService, [ Member, Ticket, MemberHistory ]);
-	const authService: AuthService = new AuthService(configService);
+	// const ormService: OrmService = new OrmService(configService, [ Member, Ticket, MemberHistory ]);
+	// const authService: AuthService = new AuthService(configService);
 	const accessLevelGuardMiddleware: AccessLevelGuardMiddleware = new AccessLevelGuardMiddleware(configService);
 
 	/* Regular Scrapping from Koyfin */
 	const ndxBookParseService: NdxBookParseService = new NdxBookParseService();
 	const hisnetScrapService: HisnetScrapService = new HisnetScrapService();
 
-	return ormService.getConnection().then(connection => {
-		const memberRepository: Repository<Member> = connection.getRepository(Member);
-		const ticketRepository: Repository<Ticket> = connection.getRepository(Ticket);
-		const memberHistoryRepository: Repository<MemberHistory> = connection.getRepository(MemberHistory);
+	// return ormService.getConnection().then(connection => {
+		// const memberRepository: Repository<Member> = connection.getRepository(Member);
+		// const ticketRepository: Repository<Ticket> = connection.getRepository(Ticket);
+		// const memberHistoryRepository: Repository<MemberHistory> = connection.getRepository(MemberHistory);
 
-		const memberRouter: MemberRouter = new MemberRouter(accessLevelGuardMiddleware, authService, memberRepository, memberHistoryRepository);
-		const ticketRouter: TicketRouter = new TicketRouter(ticketRepository);
+		// const memberRouter: MemberRouter = new MemberRouter(accessLevelGuardMiddleware, authService, memberRepository, memberHistoryRepository);
+		// const ticketRouter: TicketRouter = new TicketRouter(ticketRepository);
 		const ndxBookRouter: NdxBookRouter = new NdxBookRouter(accessLevelGuardMiddleware, ndxBookParseService);
 		const utilRouter: UtilRouter = new UtilRouter(hisnetScrapService);
 
@@ -59,8 +59,8 @@ export function main(options: MainOptions) {
 			res.status(200).send("OK");
 		});
 
-		app.use('/member', memberRouter.getRouter());
-		app.use('/ticket', ticketRouter.getRouter());
+		// app.use('/member', memberRouter.getRouter());
+		// app.use('/ticket', ticketRouter.getRouter());
 		app.use('/ndxBook', ndxBookRouter.getRouter());
 		app.use('/util', utilRouter.getRouter());
 
@@ -80,7 +80,7 @@ export function main(options: MainOptions) {
 				reject(err);
 			});
 		});
-	});
+	// });
 }
 
 if (require.main === module) {
