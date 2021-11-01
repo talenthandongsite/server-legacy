@@ -16,4 +16,6 @@ RUN npm run build
 
 WORKDIR /
 
+EXPOSE 3000
+
 CMD ["npm", "run", "start"]
