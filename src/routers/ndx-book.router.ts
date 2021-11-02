@@ -25,7 +25,7 @@ export class NdxBookRouter implements BaseRouter {
         
         ndxBookRouter.get(
             CONTEXT.BASE, 
-            this.accessLevelGuardMiddleware.getMiddleware(ACCESS_LEVEL_TYPE.MEMBER),
+            // this.accessLevelGuardMiddleware.getMiddleware(ACCESS_LEVEL_TYPE.MEMBER),
             this.getNdxBook()
         );
         ndxBookRouter.post(
