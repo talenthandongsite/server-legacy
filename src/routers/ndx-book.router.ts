@@ -52,6 +52,7 @@ export class NdxBookRouter implements BaseRouter {
 
             try {
                 this.ndxBookData = this.ndxBookParseService.parse(rawData);
+                console.log(this.ndxBookData.length);
                 res.send({ status: true });
             } catch(error) {
                 next(new InternalServerError(error));
