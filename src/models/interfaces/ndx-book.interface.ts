@@ -64,6 +64,7 @@ export interface RawNdxBook {
         }
     }
 }
+
 export enum NDX_DATA_TYPE {
     STRING = 'STRING', // Apple Inc.
     NUMBER = 'NUMBER', // 12.1
@@ -197,7 +198,7 @@ export const NdxStockColumn: NdxStockFormat[] = [
         label: '비중',
         value: 'share',
         description: '',
-        type: NDX_DATA_TYPE.NUMBER,
+        type: NDX_DATA_TYPE.PERCENTAGE,
         category: NDX_CATEGORY_TYPE.BASIC_INFO,
         order: 5
     },
@@ -218,10 +219,10 @@ export const NdxStockColumn: NdxStockFormat[] = [
         order: 13
     },
     {
-        label: '비중',
+        label: '현재비중',
         value: 'curShare',
         description: '',
-        type: NDX_DATA_TYPE.NUMBER,
+        type: NDX_DATA_TYPE.PERCENTAGE,
         category: NDX_CATEGORY_TYPE.IB_TARGET_INFO,
         order: 19
     },
@@ -245,7 +246,7 @@ export const NdxStockColumn: NdxStockFormat[] = [
         label: '1M비중',
         value: 'm1Share',
         description: '',
-        type: NDX_DATA_TYPE.NUMBER,
+        type: NDX_DATA_TYPE.PERCENTAGE,
         category: NDX_CATEGORY_TYPE.IB_TARGET_INFO,
         order: 24
     },
@@ -261,7 +262,7 @@ export const NdxStockColumn: NdxStockFormat[] = [
         label: '3M비중',
         value: 'm3Share',
         description: '',
-        type: NDX_DATA_TYPE.NUMBER,
+        type: NDX_DATA_TYPE.PERCENTAGE,
         category: NDX_CATEGORY_TYPE.IB_TARGET_INFO,
         order: 26
     },
@@ -277,7 +278,7 @@ export const NdxStockColumn: NdxStockFormat[] = [
         label: '6M비중',
         value: 'm6Share',
         description: '',
-        type: NDX_DATA_TYPE.NUMBER,
+        type: NDX_DATA_TYPE.PERCENTAGE,
         category: NDX_CATEGORY_TYPE.IB_TARGET_INFO,
         order: 28
     },
@@ -341,7 +342,7 @@ export const NdxStockColumn: NdxStockFormat[] = [
         label: '1W비중',
         value: 'w1Share',
         description: '',
-        type: NDX_DATA_TYPE.NUMBER,
+        type: NDX_DATA_TYPE.PERCENTAGE,
         category: NDX_CATEGORY_TYPE.IB_TARGET_INFO,
         order: 22
     },
@@ -365,7 +366,7 @@ export const NdxStockColumn: NdxStockFormat[] = [
         label: '1Y비중',
         value: 'y1Share',
         description: '',
-        type: NDX_DATA_TYPE.NUMBER,
+        type: NDX_DATA_TYPE.PERCENTAGE,
         category: NDX_CATEGORY_TYPE.IB_TARGET_INFO,
         order: 30
     },
