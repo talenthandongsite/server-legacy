@@ -1,5 +1,337 @@
 import { KoyfinScrapData } from "../models/interfaces";
 
+export interface RawNdxBook {
+    ndx100Data: {
+        ndx100Idx: string;
+        ndx100Target: string;
+    }
+    result: [
+        {
+            EPSInfo: {
+                epsFY1E: string;
+                epsFY2E: string;
+                epsLTM: string;
+                epsNTM: string;
+                nextEarnings: string;
+            }
+            basicInfo: {
+                divYield: string;
+                evSalesLTM: string;
+                evSalesNTM: string;
+                lastPrice: string;
+                marketCap: string;
+                name: string;
+                peLTM: string;
+                peNTM: string;
+                share: string;
+                ticker: string;
+            }
+            ibTargetInfo: {
+                buy: string;
+                curShare: string;
+                hold: string;
+                m1Before: string;
+                m1Share: string;
+                m3Before: string;
+                m3Share: string;
+                m6Before: string;
+                m6Share: string;
+                numbers: string;
+                potential: string;
+                priceTarget: string;
+                sell: string;
+                strongBuy: string;
+                strongSell: string;
+                w1Before: string;
+                w1Share: string;
+                w1Wave: string;
+                y1Before: string;
+                y1Share: string;
+            }
+        }
+    ]
+    stat: {
+        epsChangeChart: {
+            totalFY1E: number;
+            totalFY2E: number;
+            totalFY3E: number;
+            totalNTM: number;
+        }
+        ratingChart: {
+            totalBuy: any;
+            totalHold: any;
+            totalSell: any;
+            totalStrongBuy: any;
+            totalStrongSell: any;
+        }
+    }
+}
+
+export enum NDX_DATA_TYPE {
+    STRING = 'STRING', // Apple Inc.
+    NUMBER = 'NUMBER', // 12.1
+    CURRENCY = 'CURRENCY', // ex. $142.1
+    TIMES = 'TIMES', // ex. 65x
+    PERCENTAGE = 'PERCENTAGE', // 32%
+    DATE = 'DATE'
+}
+
+export enum NDX_CATEGORY_TYPE {
+    BASIC_INFO = 'BASIC_INFO',
+    EPS_INFO = 'EPS_INFO',
+    IB_TARGET_INFO = 'IB_TARGET_INFO'
+}
+
+export const NdxStockColumn: NdxStockFormat[] = [
+    {
+        label: 'epsFY1E',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.EPS_INFO
+    },
+    {
+        label: 'epsFY2E',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.EPS_INFO
+    },
+    {
+        label: 'epsLTM',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.EPS_INFO
+    },
+    {
+        label: 'epsNTM',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.EPS_INFO
+    },
+    {
+        label: 'nextEarnings',
+        type: NDX_DATA_TYPE.DATE,
+        category: NDX_CATEGORY_TYPE.EPS_INFO
+    },
+    {
+        label: 'divYield',
+        type: NDX_DATA_TYPE.PERCENTAGE,
+        category: NDX_CATEGORY_TYPE.BASIC_INFO
+    },
+    {
+        label: 'evSalesLTM',
+        type: NDX_DATA_TYPE.TIMES,
+        category: NDX_CATEGORY_TYPE.BASIC_INFO
+    },
+    {
+        label: 'evSalesNTM',
+        type: NDX_DATA_TYPE.TIMES,
+        category: NDX_CATEGORY_TYPE.BASIC_INFO
+    },
+    {
+        label: 'lastPrice',
+        type: NDX_DATA_TYPE.CURRENCY,
+        category: NDX_CATEGORY_TYPE.BASIC_INFO
+    },
+    {
+        label: 'marketCap',
+        type: NDX_DATA_TYPE.CURRENCY,
+        category: NDX_CATEGORY_TYPE.BASIC_INFO
+    },
+    {
+        label: 'name',
+        type: NDX_DATA_TYPE.STRING,
+        category: NDX_CATEGORY_TYPE.BASIC_INFO
+    },
+    {
+        label: 'peLTM',
+        type: NDX_DATA_TYPE.TIMES,
+        category: NDX_CATEGORY_TYPE.BASIC_INFO
+    },
+    {
+        label: 'peNTM',
+        type: NDX_DATA_TYPE.TIMES,
+        category: NDX_CATEGORY_TYPE.BASIC_INFO
+    },
+    {
+        label: 'share',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.BASIC_INFO
+    },
+    {
+        label: 'ticker',
+        type: NDX_DATA_TYPE.STRING,
+        category: NDX_CATEGORY_TYPE.BASIC_INFO
+    },
+    {
+        label: 'buy',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.IB_TARGET_INFO
+    },
+    {
+        label: 'curShare',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.IB_TARGET_INFO
+    },
+    {
+        label: 'hold',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.IB_TARGET_INFO
+    },
+    {
+        label: 'm1Before',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.IB_TARGET_INFO
+    },
+    {
+        label: 'm1Share',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.IB_TARGET_INFO
+    },
+    {
+        label: 'm3Before',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.IB_TARGET_INFO
+    },
+    {
+        label: 'm3Share',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.IB_TARGET_INFO
+    },
+    {
+        label: 'm6Before',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.IB_TARGET_INFO
+    },
+    {
+        label: 'm6Share',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.IB_TARGET_INFO
+    },
+    {
+        label: 'numbers',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.IB_TARGET_INFO
+    },
+    {
+        label: 'potential',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.IB_TARGET_INFO
+    },
+    {
+        label: 'priceTarget',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.IB_TARGET_INFO
+    },
+    {
+        label: 'sell',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.IB_TARGET_INFO
+    },
+    {
+        label: 'strongBuy',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.IB_TARGET_INFO
+    },
+    {
+        label: 'strongSell',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.IB_TARGET_INFO
+    },
+    {
+        label: 'w1Before',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.IB_TARGET_INFO
+    },
+    {
+        label: 'w1Share',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.IB_TARGET_INFO
+    },
+    {
+        label: 'w1Wave',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.IB_TARGET_INFO
+    },
+    {
+        label: 'y1Before',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.IB_TARGET_INFO
+    },
+    {
+        label: 'y1Share',
+        type: NDX_DATA_TYPE.NUMBER,
+        category: NDX_CATEGORY_TYPE.IB_TARGET_INFO
+    },
+]
+
+export interface NdxStock {
+    epsFY1E: number;
+    epsFY2E: number;
+    epsLTM: number;
+    epsNTM: number;
+    nextEarnings: number;
+    divYield: number;
+    evSalesLTM: number;
+    evSalesNTM: number;
+    lastPrice: number;
+    marketCap: number;
+    name: string;
+    peLTM: number;
+    peNTM: number;
+    share: number;
+    ticker: string;
+    buy: number;
+    curShare: number;
+    hold: number;
+    m1Before: number;
+    m1Share: number;
+    m3Before: number;
+    m3Share: number;
+    m6Before: number;
+    m6Share: number;
+    numbers: number;
+    potential: number;
+    priceTarget: number;
+    sell: number;
+    strongBuy: number;
+    strongSell: number;
+    w1Before: number;
+    w1Share: number;
+    w1Wave: number;
+    y1Before: number;
+    y1Share: number;
+}
+
+export interface NdxStockFormat {
+    label: string;
+    type: NDX_DATA_TYPE;
+    category: NDX_CATEGORY_TYPE;
+}
+
+export interface NdxEPSPrediction {
+    totalFY1E: number;
+    totalFY2E: number;
+    totalFY3E: number;
+    totalNTM: number;
+}
+
+export interface NdxStockRating {
+    totalBuy: number;
+    totalHold: number;
+    totalSell: number;
+    totalStrongBuy: number;
+    totalStrongSell: number;
+}
+
+export interface NdxPrediction {
+    ndxCurrent: number;
+    ndxTarget: number;
+}
+
+export interface NdxBookData {
+    ndxPrediction: NdxPrediction;
+    epsPrediction: NdxEPSPrediction;
+    stockRating: NdxStockRating;
+    stockInfo: NdxStock[];
+}
+
+
 export class NdxBookParseService {
 
     constructor() {}
@@ -11,7 +343,76 @@ export class NdxBookParseService {
     나스닥100종목의 TP에서의 시가총액 = SUM(각 종목의 TP * 발행주식수)
     "나스닥100 지수의 TP" = (나스닥100종목의 TP에서의 시가총액 * 현재 나스닥100 지수) / 현재 나스닥100 종목의 총 시가총액
     */
-    parse(rawString: string) {
+
+    parse(rawString: string, forFront: boolean): NdxBookData | RawNdxBook {
+        const stringParsed = this.parseRawString(rawString);
+
+        if (!forFront) {
+            return stringParsed;
+        } else {
+            return this.parseForFront(stringParsed);
+        }
+    };
+
+    private parseForFront(data: RawNdxBook): NdxBookData {
+        const { stat: { epsChangeChart, ratingChart }, result, ndx100Data } = data;
+
+        const ndxPrediction: NdxPrediction = {
+            ndxCurrent: parseInt(ndx100Data.ndx100Idx),
+            ndxTarget: parseInt(ndx100Data.ndx100Target)
+        };
+        const epsPrediction: NdxEPSPrediction = epsChangeChart;
+        const stockRating: NdxStockRating = ratingChart;
+
+        const keyTypeMap: { [key: string]: NdxStockFormat } = {}; 
+        NdxStockColumn.forEach(element => {
+            const { label } = element;
+            keyTypeMap[label] = element;
+        });
+
+        const stockInfo: NdxStock[] = result.map(({ EPSInfo, basicInfo, ibTargetInfo }) => {
+            const merged = { ...EPSInfo, ...basicInfo, ...ibTargetInfo };
+            const parsed: NdxStock = { 
+                epsFY1E: null, epsFY2E: null, epsLTM: null, epsNTM: null, nextEarnings: null, 
+                divYield: null, evSalesLTM: null, evSalesNTM: null, lastPrice: null, marketCap: null, 
+                name: null, peLTM: null, peNTM: null, share: null, ticker: null, buy: null, 
+                curShare: null, hold: null, m1Before: null, m1Share: null, m3Before: null, 
+                m3Share: null, m6Before: null, m6Share: null, numbers: null, potential: null, 
+                priceTarget: null, sell: null, strongBuy: null, strongSell: null, w1Before: null, 
+                w1Share: null, w1Wave: null, y1Before: null, y1Share: null
+            };
+
+            Object.keys(merged).map(key => {
+                const element: string = merged[key];
+
+                if (!(key in keyTypeMap)) {
+                    return;
+                } 
+
+                const { type } = keyTypeMap[key];
+
+                if (type == NDX_DATA_TYPE.NUMBER) {
+                    parsed[key] = parseFloat(element);
+                } else if (type == NDX_DATA_TYPE.PERCENTAGE) {
+                    parsed[key] = parseFloat(element) / 100;
+                } else if (type == NDX_DATA_TYPE.TIMES) {
+                    parsed[key] = parseFloat(element);
+                } else if (type == NDX_DATA_TYPE.CURRENCY) {
+                    const multiple = element.search(/[bB]/) > -1 ? 1000000000 : element.search(/[mM]/) > -1 ? 1000000 : 1;
+                    parsed[key] = parseFloat(element.replace(/\$/g, '')) * multiple;
+                } else if (type == NDX_DATA_TYPE.DATE) {
+                    const [ _, month, day, year ] = element.split(' ');
+                    parsed[key] = new Date(year + month + parseInt(day));
+                }
+            })
+            return parsed;
+        });
+
+        // return parsedData
+        return { ndxPrediction, epsPrediction, stockRating, stockInfo };
+    }
+
+    private parseRawString(rawString: string): RawNdxBook {
 
         let scrapDataTypeArr = [];
     
@@ -219,5 +620,7 @@ export class NdxBookParseService {
         }
     
         return outputObj
-    };
+    }
+
+
 }

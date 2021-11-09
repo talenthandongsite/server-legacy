@@ -16,6 +16,7 @@ export class NdxBookRouter implements BaseRouter {
     
     private ndxBookRouter;
     private ndxBookData: any;
+    private ndxBookDataRefined: any;
 
     constructor(
         private accessLevelGuardMiddleware: AccessLevelGuardMiddleware, 
@@ -37,9 +38,16 @@ export class NdxBookRouter implements BaseRouter {
     }
 
     private getNdxBook() {
-        return (_: Request, res: Response, next: NextFunction) => {
+        return (req: Request, res: Response, next: NextFunction) => {
             if (this.ndxBookData) {
-                res.send(this.ndxBookData);
+                const { refined } = req.query;
+                let responseData;
+                if (refined && /[tT][rR][uU][eE]/.test(<string>refined)) {
+                    responseData = this.ndxBookDataRefined;
+                } else {
+                    responseData = this.ndxBookData;
+                }
+                res.send(responseData);
                 return;
             }
             next(new NotFoundException('Temporarilly not found. Try again later'));
@@ -51,8 +59,8 @@ export class NdxBookRouter implements BaseRouter {
             const { data: rawData } = req.body;
 
             try {
-                this.ndxBookData = this.ndxBookParseService.parse(rawData);
-                console.log(this.ndxBookData.length);
+                this.ndxBookData = this.ndxBookParseService.parse(rawData, false);
+                this.ndxBookDataRefined = this.ndxBookParseService.parse(rawData, true);
                 res.send({ status: true });
             } catch(error) {
                 next(new InternalServerError(error));
