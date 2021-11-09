@@ -61,6 +61,8 @@ export class NdxBookRouter implements BaseRouter {
             try {
                 this.ndxBookData = this.ndxBookParseService.parse(rawData, false);
                 this.ndxBookDataRefined = this.ndxBookParseService.parse(rawData, true);
+
+                console.log(`[Recieved][${new Date().toISOString()}]`);
                 res.send({ status: true });
             } catch(error) {
                 next(new InternalServerError(error));
