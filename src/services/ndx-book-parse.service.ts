@@ -81,7 +81,7 @@ export class NdxBookParseService {
         });
 
         // return parsedData
-        return { ndxPrediction, epsPrediction, stockRating, stockInfo };
+        return { ndxPrediction, epsPrediction, stockRating, stockHeader: NdxStockColumn, stockInfo };
     }
 
     private parseRawString(rawString: string): RawNdxBook {

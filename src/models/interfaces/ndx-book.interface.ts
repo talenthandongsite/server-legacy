@@ -442,5 +442,6 @@ export interface NdxBookData {
     ndxPrediction: NdxPrediction;
     epsPrediction: NdxEPSPrediction;
     stockRating: NdxStockRating;
+    stockHeader: NdxStockFormat[];
     stockInfo: NdxStock[];
 }
