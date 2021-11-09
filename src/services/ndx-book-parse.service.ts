@@ -75,8 +75,11 @@ export class NdxBookParseService {
                 } else if (type == NDX_DATA_TYPE.DATE) {
                     const [ _, month, day, year ] = element.split(' ');
                     parsed[key] = new Date(year + month + parseInt(day));
+                } else {
+                    parsed[key] = element;
                 }
             });
+
             return parsed;
         });
 
