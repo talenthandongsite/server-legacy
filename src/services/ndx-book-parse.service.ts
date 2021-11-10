@@ -65,7 +65,7 @@ export class NdxBookParseService {
 
                 if (type == NDX_DATA_TYPE.NUMBER) {
                     parsed[key] = parseFloat(element);
-                } else if (type == NDX_DATA_TYPE.PERCENTAGE) {
+                } else if (type == NDX_DATA_TYPE.PERCENTAGE || type == NDX_DATA_TYPE.VARIATION) {
                     parsed[key] = parseFloat(element) / 100;
                 } else if (type == NDX_DATA_TYPE.TIMES) {
                     parsed[key] = parseFloat(element);

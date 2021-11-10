@@ -72,6 +72,7 @@ export enum NDX_DATA_TYPE {
     PRICE = 'PRICE', // ex. $142.1
     TIMES = 'TIMES', // ex. 65x
     PERCENTAGE = 'PERCENTAGE', // 32%
+    VARIATION = 'VARIATION', // +32% , - 21%
     DATE = 'DATE'
 }
 
@@ -244,10 +245,10 @@ export const NdxStockColumn: NdxStockFormat[] = [
         order: 23
     },
     {
-        label: '1M비중',
-        value: 'm1Share',
+        label: '1M 비중 변화',
+        value: 'm1Variation',
         description: '',
-        type: NDX_DATA_TYPE.PERCENTAGE,
+        type: NDX_DATA_TYPE.VARIATION,
         category: NDX_CATEGORY_TYPE.IB_TARGET_INFO,
         order: 24
     },
@@ -260,10 +261,10 @@ export const NdxStockColumn: NdxStockFormat[] = [
         order: 25
     },
     {
-        label: '3M비중',
-        value: 'm3Share',
+        label: '3M 비중 변화',
+        value: 'm3Variation',
         description: '',
-        type: NDX_DATA_TYPE.PERCENTAGE,
+        type: NDX_DATA_TYPE.VARIATION,
         category: NDX_CATEGORY_TYPE.IB_TARGET_INFO,
         order: 26
     },
@@ -276,10 +277,10 @@ export const NdxStockColumn: NdxStockFormat[] = [
         order: 27
     },
     {
-        label: '6M비중',
-        value: 'm6Share',
+        label: '6M 비중 변화',
+        value: 'm6Variation',
         description: '',
-        type: NDX_DATA_TYPE.PERCENTAGE,
+        type: NDX_DATA_TYPE.VARIATION,
         category: NDX_CATEGORY_TYPE.IB_TARGET_INFO,
         order: 28
     },
@@ -295,7 +296,7 @@ export const NdxStockColumn: NdxStockFormat[] = [
         label: '상승여력',
         value: 'potential',
         description: '',
-        type: NDX_DATA_TYPE.PERCENTAGE,
+        type: NDX_DATA_TYPE.VARIATION,
         category: NDX_CATEGORY_TYPE.IB_TARGET_INFO,
         order: 18
     },
@@ -340,10 +341,10 @@ export const NdxStockColumn: NdxStockFormat[] = [
         order: 21
     },
     {
-        label: '1W비중',
-        value: 'w1Share',
+        label: '1W 비중 변화',
+        value: 'w1Variation',
         description: '',
-        type: NDX_DATA_TYPE.PERCENTAGE,
+        type: NDX_DATA_TYPE.VARIATION,
         category: NDX_CATEGORY_TYPE.IB_TARGET_INFO,
         order: 22
     },
@@ -364,10 +365,10 @@ export const NdxStockColumn: NdxStockFormat[] = [
         order: 29
     },
     {
-        label: '1Y비중',
-        value: 'y1Share',
+        label: '1Y 비중 변화',
+        value: 'y1Variation',
         description: '',
-        type: NDX_DATA_TYPE.PERCENTAGE,
+        type: NDX_DATA_TYPE.VARIATION,
         category: NDX_CATEGORY_TYPE.IB_TARGET_INFO,
         order: 30
     },
