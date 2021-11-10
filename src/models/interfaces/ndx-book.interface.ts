@@ -68,7 +68,8 @@ export interface RawNdxBook {
 export enum NDX_DATA_TYPE {
     STRING = 'STRING', // Apple Inc.
     NUMBER = 'NUMBER', // 12.1
-    CURRENCY = 'CURRENCY', // ex. $142.1
+    MARKET_CAP = 'MARKET_CAP', //ex. $ 12.2B
+    PRICE = 'PRICE', // ex. $142.1
     TIMES = 'TIMES', // ex. 65x
     PERCENTAGE = 'PERCENTAGE', // 32%
     DATE = 'DATE'
@@ -158,7 +159,7 @@ export const NdxStockColumn: NdxStockFormat[] = [
         label: '종가',
         value: 'lastPrice',
         description: '',
-        type: NDX_DATA_TYPE.CURRENCY,
+        type: NDX_DATA_TYPE.PRICE,
         category: NDX_CATEGORY_TYPE.BASIC_INFO,
         order: 3
     },
@@ -166,7 +167,7 @@ export const NdxStockColumn: NdxStockFormat[] = [
         label: '시가총액',
         value: 'marketCap',
         description: '',
-        type: NDX_DATA_TYPE.CURRENCY,
+        type: NDX_DATA_TYPE.MARKET_CAP,
         category: NDX_CATEGORY_TYPE.BASIC_INFO,
         order: 4
     },
@@ -238,7 +239,7 @@ export const NdxStockColumn: NdxStockFormat[] = [
         label: '1M전',
         value: 'm1Before',
         description: '',
-        type: NDX_DATA_TYPE.NUMBER,
+        type: NDX_DATA_TYPE.PRICE,
         category: NDX_CATEGORY_TYPE.IB_TARGET_INFO,
         order: 23
     },
@@ -254,7 +255,7 @@ export const NdxStockColumn: NdxStockFormat[] = [
         label: '3M전',
         value: 'm3Before',
         description: '',
-        type: NDX_DATA_TYPE.NUMBER,
+        type: NDX_DATA_TYPE.PRICE,
         category: NDX_CATEGORY_TYPE.IB_TARGET_INFO,
         order: 25
     },
@@ -270,7 +271,7 @@ export const NdxStockColumn: NdxStockFormat[] = [
         label: '6M전',
         value: 'm6Before',
         description: '',
-        type: NDX_DATA_TYPE.NUMBER,
+        type: NDX_DATA_TYPE.PRICE,
         category: NDX_CATEGORY_TYPE.IB_TARGET_INFO,
         order: 27
     },
@@ -294,7 +295,7 @@ export const NdxStockColumn: NdxStockFormat[] = [
         label: '상승여력',
         value: 'potential',
         description: '',
-        type: NDX_DATA_TYPE.NUMBER,
+        type: NDX_DATA_TYPE.PERCENTAGE,
         category: NDX_CATEGORY_TYPE.IB_TARGET_INFO,
         order: 18
     },
@@ -302,7 +303,7 @@ export const NdxStockColumn: NdxStockFormat[] = [
         label: '현재',
         value: 'priceTarget',
         description: '',
-        type: NDX_DATA_TYPE.NUMBER,
+        type: NDX_DATA_TYPE.PRICE,
         category: NDX_CATEGORY_TYPE.IB_TARGET_INFO,
         order: 17
     },
@@ -334,7 +335,7 @@ export const NdxStockColumn: NdxStockFormat[] = [
         label: '1W전',
         value: 'w1Before',
         description: '',
-        type: NDX_DATA_TYPE.NUMBER,
+        type: NDX_DATA_TYPE.PRICE,
         category: NDX_CATEGORY_TYPE.IB_TARGET_INFO,
         order: 21
     },
@@ -350,7 +351,7 @@ export const NdxStockColumn: NdxStockFormat[] = [
         label: '1W변동',
         value: 'w1Wave',
         description: '',
-        type: NDX_DATA_TYPE.NUMBER,
+        type: NDX_DATA_TYPE.PRICE,
         category: NDX_CATEGORY_TYPE.IB_TARGET_INFO,
         order: 20
     },
@@ -358,7 +359,7 @@ export const NdxStockColumn: NdxStockFormat[] = [
         label: '1Y전',
         value: 'y1Before',
         description: '',
-        type: NDX_DATA_TYPE.NUMBER,
+        type: NDX_DATA_TYPE.PRICE,
         category: NDX_CATEGORY_TYPE.IB_TARGET_INFO,
         order: 29
     },

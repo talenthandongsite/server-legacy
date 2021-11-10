@@ -69,9 +69,11 @@ export class NdxBookParseService {
                     parsed[key] = parseFloat(element) / 100;
                 } else if (type == NDX_DATA_TYPE.TIMES) {
                     parsed[key] = parseFloat(element);
-                } else if (type == NDX_DATA_TYPE.CURRENCY) {
+                } else if (type == NDX_DATA_TYPE.MARKET_CAP) {
                     const multiple = element.search(/[bB]/) > -1 ? 1000000000 : element.search(/[mM]/) > -1 ? 1000000 : 1;
                     parsed[key] = parseFloat(element.replace(/\$/g, '')) * multiple;
+                } else if (type == NDX_DATA_TYPE.PRICE) {
+                    parsed[key] = parseFloat(element);
                 } else if (type == NDX_DATA_TYPE.DATE) {
                     const [ _, month, day, year ] = element.split(' ');
                     parsed[key] = new Date(year + month + parseInt(day));
@@ -79,7 +81,7 @@ export class NdxBookParseService {
                     parsed[key] = element;
                 }
             });
-
+            // console.log(parsed)
             return parsed;
         });
 
