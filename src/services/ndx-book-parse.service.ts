@@ -216,7 +216,7 @@ export class NdxBookParseService {
                 name: row.name,
                 lastPrice: row.lastPrice,
                 marketCap: row.marketCap,
-                share: (parseFloat(row.marketCap.slice(1, row.marketCap.length-1))/100).toFixed(2).toString(),
+                share: (parseFloat(row.marketCap.slice(1, row.marketCap.length-1))/100).toString(),
                 peNTM: row.peNTM,
                 peLTM: row.peLTM,
                 evSalesNTM: row.evSalesNTM,
@@ -232,19 +232,19 @@ export class NdxBookParseService {
                 sell: row.sell,
                 strongSell: row.strongSell,
                 priceTarget: row.priceTarget,
-                potential: ((parseFloat(row.priceTarget)-parseFloat(row.lastPrice))/parseFloat(row.lastPrice)).toFixed(4).toString(),
-                curShare: ((parseFloat(row.priceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share))).toFixed(2).toString(),
-                w1Wave: (parseFloat(row.priceTarget)-parseFloat(row.w1PriceTarget)).toFixed(2).toString(),
+                potential: ((parseFloat(row.priceTarget)-parseFloat(row.lastPrice))/parseFloat(row.lastPrice) * 100).toString(),
+                curShare: ((parseFloat(row.priceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
+                w1Wave: (parseFloat(row.priceTarget)-parseFloat(row.w1PriceTarget)).toString(),
                 w1Before: row.w1PriceTarget,
-                w1Share: ((parseFloat(row.w1PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share))).toFixed(2).toString(),
+                w1Share: ((parseFloat(row.w1PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
                 m1Before: row.m1PriceTarget,
-                m1Share: ((parseFloat(row.m1PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share))).toFixed(2).toString(),
+                m1Share: ((parseFloat(row.m1PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
                 m3Before: row.m3PriceTarget,
-                m3Share: ((parseFloat(row.m3PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share))).toFixed(2).toString(),
+                m3Share: ((parseFloat(row.m3PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
                 m6Before: row.m6PriceTarget,
-                m6Share: ((parseFloat(row.m6PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share))).toFixed(2).toString(),
+                m6Share: ((parseFloat(row.m6PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
                 y1Before: row.y1PriceTarget,
-                y1Share: ((parseFloat(row.y1PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share))).toFixed(2).toString(),
+                y1Share: ((parseFloat(row.y1PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
             };
         
             let EPSInfo = {
@@ -292,8 +292,8 @@ export class NdxBookParseService {
         }
     
         outputObj.ndx100Data = {
-            ndx100Idx: parseFloat(ndx100Idx).toFixed(0),
-            ndx100TargetPrice: ((tpTotalMarketCap * parseFloat(ndx100Idx))/(totalMarketCap*Math.pow(10, 9))).toFixed(0)
+            ndx100Idx: parseFloat(ndx100Idx),
+            ndx100TargetPrice: ((tpTotalMarketCap * parseFloat(ndx100Idx))/(totalMarketCap*Math.pow(10, 9)))
         }
     
         return outputObj
