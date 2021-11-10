@@ -349,7 +349,7 @@ export const NdxStockColumn: NdxStockFormat[] = [
         order: 22
     },
     {
-        label: '1W변동',
+        label: '1W 가격 변동',
         value: 'w1Wave',
         description: '',
         type: NDX_DATA_TYPE.PRICE,
@@ -394,11 +394,11 @@ export interface NdxStock {
     curShare: number;
     hold: number;
     m1Before: number;
-    m1Share: number;
+    m1Variation: number;
     m3Before: number;
-    m3Share: number;
+    m3Variation: number;
     m6Before: number;
-    m6Share: number;
+    m6Variation: number;
     numbers: number;
     potential: number;
     priceTarget: number;
@@ -406,10 +406,10 @@ export interface NdxStock {
     strongBuy: number;
     strongSell: number;
     w1Before: number;
-    w1Share: number;
+    w1Variation: number;
     w1Wave: number;
     y1Before: number;
-    y1Share: number;
+    y1Variation: number;
 }
 
 export interface NdxStockFormat {

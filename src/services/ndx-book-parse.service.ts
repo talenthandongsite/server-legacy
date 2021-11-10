@@ -48,10 +48,10 @@ export class NdxBookParseService {
                 epsFY1E: null, epsFY2E: null, epsLTM: null, epsNTM: null, nextEarnings: null, 
                 divYield: null, evSalesLTM: null, evSalesNTM: null, lastPrice: null, marketCap: null, 
                 name: null, peLTM: null, peNTM: null, share: null, ticker: null, buy: null, 
-                curShare: null, hold: null, m1Before: null, m1Share: null, m3Before: null, 
-                m3Share: null, m6Before: null, m6Share: null, numbers: null, potential: null, 
+                curShare: null, hold: null, m1Before: null, m1Variation: null, m3Before: null, 
+                m3Variation: null, m6Before: null, m6Variation: null, numbers: null, potential: null, 
                 priceTarget: null, sell: null, strongBuy: null, strongSell: null, w1Before: null, 
-                w1Share: null, w1Wave: null, y1Before: null, y1Share: null
+                w1Variation: null, w1Wave: null, y1Before: null, y1Variation: null
             };
 
             Object.keys(merged).map(key => {
@@ -236,15 +236,15 @@ export class NdxBookParseService {
                 curShare: ((parseFloat(row.priceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
                 w1Wave: (parseFloat(row.priceTarget)-parseFloat(row.w1PriceTarget)).toString(),
                 w1Before: row.w1PriceTarget,
-                w1Share: ((parseFloat(row.w1PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
+                w1Variation: ((parseFloat(row.w1PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
                 m1Before: row.m1PriceTarget,
-                m1Share: ((parseFloat(row.m1PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
+                m1Variation: ((parseFloat(row.m1PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
                 m3Before: row.m3PriceTarget,
-                m3Share: ((parseFloat(row.m3PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
+                m3Variation: ((parseFloat(row.m3PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
                 m6Before: row.m6PriceTarget,
-                m6Share: ((parseFloat(row.m6PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
+                m6Variation: ((parseFloat(row.m6PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
                 y1Before: row.y1PriceTarget,
-                y1Share: ((parseFloat(row.y1PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
+                y1Variation: ((parseFloat(row.y1PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
             };
         
             let EPSInfo = {
@@ -257,11 +257,11 @@ export class NdxBookParseService {
             };
     
             // CHART-2
-            totaly1PT+=parseFloat(ibTargetInfo.y1Share);
-            totalm6PT+=parseFloat(ibTargetInfo.m6Share);
-            totalm3PT+=parseFloat(ibTargetInfo.m3Share);
-            totalm1PT+=parseFloat(ibTargetInfo.m1Share);
-            totalw1PT+=parseFloat(ibTargetInfo.w1Share);
+            totaly1PT+=parseFloat(ibTargetInfo.y1Variation);
+            totalm6PT+=parseFloat(ibTargetInfo.m6Variation);
+            totalm3PT+=parseFloat(ibTargetInfo.m3Variation);
+            totalm1PT+=parseFloat(ibTargetInfo.m1Variation);
+            totalw1PT+=parseFloat(ibTargetInfo.w1Variation);
             totalcurPT+=parseFloat(ibTargetInfo.curShare);
     
     
