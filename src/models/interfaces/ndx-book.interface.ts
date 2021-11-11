@@ -1,7 +1,7 @@
 export interface RawNdxBook {
     ndx100Data: {
-        ndx100Idx: string;
-        ndx100Target: string;
+        ndx100Idx: number;
+        ndx100Target: number;
     }
     result: [
         {
@@ -301,7 +301,7 @@ export const NdxStockColumn: NdxStockFormat[] = [
         order: 18
     },
     {
-        label: '현재',
+        label: '현재 목표가',
         value: 'priceTarget',
         description: '',
         type: NDX_DATA_TYPE.PRICE,
@@ -377,6 +377,7 @@ export const NdxStockColumn: NdxStockFormat[] = [
 export interface NdxStock {
     epsFY1E: number;
     epsFY2E: number;
+    epsFY3E: number;
     epsLTM: number;
     epsNTM: number;
     nextEarnings: number;
@@ -442,9 +443,8 @@ export interface NdxPrediction {
 }
 
 export interface NdxBookData {
-    ndxPrediction: NdxPrediction;
-    epsPrediction: NdxEPSPrediction;
-    stockRating: NdxStockRating;
-    stockHeader: NdxStockFormat[];
-    stockInfo: NdxStock[];
+    header: NdxStockFormat[];
+    data: NdxStock[];
+    currentNdx: number;
+    summary: NdxStock;
 }

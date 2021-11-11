@@ -5,6 +5,7 @@ import { AccessLevelGuardMiddleware } from '../middlewares';
 import { BaseRouter } from '../models/bases';
 import { InternalServerError, NotFoundException } from '../models/dtos';
 import { ACCESS_LEVEL_TYPE } from '../models/enums';
+import { NdxBookData } from '../models/interfaces';
 import { NdxBookParseService } from "../services";
 
 enum CONTEXT {
@@ -15,8 +16,7 @@ enum CONTEXT {
 export class NdxBookRouter implements BaseRouter {
     
     private ndxBookRouter;
-    private ndxBookData: any;
-    private ndxBookDataRefined: any;
+    private ndxBookData: NdxBookData;
 
     constructor(
         private accessLevelGuardMiddleware: AccessLevelGuardMiddleware, 
@@ -38,16 +38,9 @@ export class NdxBookRouter implements BaseRouter {
     }
 
     private getNdxBook() {
-        return (req: Request, res: Response, next: NextFunction) => {
+        return (_: Request, res: Response, next: NextFunction) => {
             if (this.ndxBookData) {
-                const { refined } = req.query;
-                let responseData;
-                if (refined && /[tT][rR][uU][eE]/.test(<string>refined)) {
-                    responseData = this.ndxBookDataRefined;
-                } else {
-                    responseData = this.ndxBookData;
-                }
-                res.send(responseData);
+                res.send(this.ndxBookData);
                 return;
             }
             next(new NotFoundException('Temporarilly not found. Try again later'));
@@ -59,8 +52,7 @@ export class NdxBookRouter implements BaseRouter {
             const { data: rawData } = req.body;
 
             try {
-                this.ndxBookData = this.ndxBookParseService.parse(rawData, false);
-                this.ndxBookDataRefined = this.ndxBookParseService.parse(rawData, true);
+                this.ndxBookData = this.ndxBookParseService.parse(rawData);
 
                 console.log(`[Recieved][${new Date().toISOString()}]`);
                 res.send({ status: true });

@@ -16,25 +16,13 @@ export class NdxBookParseService {
     "나스닥100 지수의 TP" = (나스닥100종목의 TP에서의 시가총액 * 현재 나스닥100 지수) / 현재 나스닥100 종목의 총 시가총액
     */
 
-    parse(rawString: string, forFront: boolean): NdxBookData | RawNdxBook {
+    parse(rawString: string): NdxBookData {
         const stringParsed = this.parseRawString(rawString);
-
-        if (!forFront) {
-            return stringParsed;
-        } else {
-            return this.parseForFront(stringParsed);
-        }
+        return this.parseForFront(stringParsed);
     };
 
     private parseForFront(data: RawNdxBook): NdxBookData {
-        const { stat: { epsChangeChart, ratingChart }, result, ndx100Data } = data;
-
-        const ndxPrediction: NdxPrediction = {
-            ndxCurrent: parseInt(ndx100Data.ndx100Idx),
-            ndxTarget: parseInt(ndx100Data.ndx100Target)
-        };
-        const epsPrediction: NdxEPSPrediction = epsChangeChart;
-        const stockRating: NdxStockRating = ratingChart;
+        const { result, ndx100Data: { ndx100Idx } } = data;
 
         const keyTypeMap: { [key: string]: NdxStockFormat } = {}; 
         NdxStockColumn.forEach(element => {
@@ -51,7 +39,7 @@ export class NdxBookParseService {
                 curShare: null, hold: null, m1Before: null, m1Variation: null, m3Before: null, 
                 m3Variation: null, m6Before: null, m6Variation: null, numbers: null, potential: null, 
                 priceTarget: null, sell: null, strongBuy: null, strongSell: null, w1Before: null, 
-                w1Variation: null, w1Wave: null, y1Before: null, y1Variation: null
+                w1Variation: null, w1Wave: null, y1Before: null, y1Variation: null, epsFY3E: null
             };
 
             Object.keys(merged).map(key => {
@@ -70,8 +58,7 @@ export class NdxBookParseService {
                 } else if (type == NDX_DATA_TYPE.TIMES) {
                     parsed[key] = parseFloat(element);
                 } else if (type == NDX_DATA_TYPE.MARKET_CAP) {
-                    const multiple = element.search(/[bB]/) > -1 ? 1000000000 : element.search(/[mM]/) > -1 ? 1000000 : 1;
-                    parsed[key] = parseFloat(element.replace(/\$/g, '')) * multiple;
+                    parsed[key] = parseMarketCap(element);
                 } else if (type == NDX_DATA_TYPE.PRICE) {
                     parsed[key] = parseFloat(element);
                 } else if (type == NDX_DATA_TYPE.DATE) {
@@ -85,22 +72,69 @@ export class NdxBookParseService {
             return parsed;
         });
 
+        const summary: NdxStock = { 
+            epsFY1E: null, epsFY2E: null, epsLTM: null, epsNTM: null, nextEarnings: null, 
+            divYield: 0, evSalesLTM: null, evSalesNTM: null, lastPrice: null, marketCap: null, 
+            name: null, peLTM: null, peNTM: null, share: null, ticker: null, buy: null, 
+            curShare: null, hold: null, m1Before: null, m1Variation: null, m3Before: null, 
+            m3Variation: null, m6Before: null, m6Variation: null, numbers: null, potential: null, 
+            priceTarget: null, sell: null, strongBuy: null, strongSell: null, w1Before: null, 
+            w1Variation: null, w1Wave: null, y1Before: null, y1Variation: null, epsFY3E: null
+        };
+        stockInfo.forEach(element => {
+            const { 
+                marketCap, share, peNTM, peLTM, evSalesNTM, evSalesLTM, numbers,
+                strongBuy, buy, hold, sell, strongSell, potential, w1Variation, m1Variation,
+                m3Variation, m6Variation, y1Variation, epsNTM, epsLTM, epsFY1E, epsFY2E, epsFY3E
+            } = element;
+
+            summary.marketCap += marketCap;
+            summary.share += share;
+            summary.peNTM += peNTM * share;
+            summary.peLTM += peLTM * share;
+            summary.evSalesNTM += evSalesNTM * share;
+            summary.evSalesLTM += evSalesLTM * share;
+            summary.numbers += numbers;
+            summary.strongBuy += strongBuy;
+            summary.buy += buy;
+            summary.hold += hold;
+            summary.sell += sell;
+            summary.strongSell += strongSell;
+            summary.potential += potential * share;
+            summary.w1Variation += w1Variation;
+            summary.m1Variation += m1Variation;
+            summary.m3Variation += m3Variation;
+            summary.m6Variation += m6Variation;
+            summary.y1Variation += y1Variation;
+            summary.epsNTM += epsNTM;
+            summary.epsLTM += epsLTM;
+            summary.epsFY1E += epsFY1E;
+            summary.epsFY2E += epsFY2E;
+            summary.epsFY3E += epsFY3E;
+        });
+        summary.priceTarget = ndx100Idx * (1 + summary.potential);
+        summary.w1Before = ndx100Idx * (1 + summary.w1Variation);
+        summary.m1Before = ndx100Idx * (1 + summary.m1Variation);
+        summary.m3Before = ndx100Idx * (1 + summary.m3Variation);
+        summary.m6Before = ndx100Idx * (1 + summary.m6Variation);
+        summary.y1Before = ndx100Idx * (1 + summary.y1Variation);
+        console.log(summary);
+
         // return parsedData
-        return { ndxPrediction, epsPrediction, stockRating, stockHeader: NdxStockColumn, stockInfo };
+        return { header: NdxStockColumn, data: stockInfo, currentNdx: ndx100Idx, summary };
     }
 
     private parseRawString(rawString: string): RawNdxBook {
 
-        let scrapDataTypeArr = [];
+        let scrapDataTypeArr: KoyfinScrapData[] = [];
     
         /* Data Arrays for API */
         let outputObj:any = {};
-        let outputArr=[];
+        let outputArr=[ ];
     
         let splittedStr = rawString.split("\r\n");
         let totalMarketCap = 0;
-    
-    
+
         /* Chart Data */
     
         //Base Data
@@ -113,13 +147,6 @@ export class NdxBookParseService {
         let totalBuy = 0;
         let totalStrongBuy = 0;
     
-        // CHART-2
-        let totaly1PT:number = 0;
-        let totalm6PT:number = 0;
-        let totalm3PT:number = 0;
-        let totalm1PT:number = 0;
-        let totalw1PT:number = 0;
-        let totalcurPT:number = 0;
     
         //Chart-4
         let totalNTM = 0;
@@ -171,13 +198,14 @@ export class NdxBookParseService {
                     w52Low: splittedRow[28],
                 };
     
-    
+                console.log(splittedRow[25], splittedRow[26], splittedRow[27])
                 /* Accumulate Total MarketCap */
                 let marketCap = 0;
-                if (typeof(splittedRow[3])==='string'){
-                    marketCap = parseFloat(splittedRow[3].slice(1, splittedRow[3].length-1))
-                    totalMarketCap+=marketCap;
+                if (typeof(splittedRow[3]) === 'string'){
+                    marketCap = parseMarketCap(splittedRow[3]);
+                    totalMarketCap += marketCap;
                 }
+
                 /* Sum of total LastPrice */
                 let lastPrice = (splittedRow[2] === '-' ? 0 : parseFloat(splittedRow[2]))
                 totalLastPrice += lastPrice;
@@ -187,18 +215,18 @@ export class NdxBookParseService {
                 tpTotalMarketCap+=(parseFloat(splittedRow[10] === '-' ? 0 : splittedRow[10]) * issuedShares)
                 
                 /* CHART-1 */
-                totalStrongSell+=parseFloat(splittedRow[20]);
-                totalSell+=parseFloat(splittedRow[19]);
-                totalHold+=parseFloat(splittedRow[18]);
-                totalBuy+=parseFloat(splittedRow[17]);
-                totalStrongBuy+=parseFloat(splittedRow[16]);
+                totalStrongSell += parseFloat(splittedRow[20]);
+                totalSell += parseFloat(splittedRow[19]);
+                totalHold += parseFloat(splittedRow[18]);
+                totalBuy += parseFloat(splittedRow[17]);
+                totalStrongBuy += parseFloat(splittedRow[16]);
     
     
                 /* CHART-4 */
-                totalNTM+=(splittedRow[21]==='-' ? 0 : parseFloat(splittedRow[21]));
-                totalFY1E+=(splittedRow[23]==='-' ? 0 : parseFloat(splittedRow[23]));
-                totalFY2E+=(splittedRow[24]==='-' ? 0 : parseFloat(splittedRow[24]));
-                totalFY3E+=(splittedRow[26]==='-' ? 0 : parseFloat(splittedRow[26]));
+                totalNTM += (splittedRow[21]=== '-' ? 0 : parseFloat(splittedRow[21]));
+                totalFY1E += (splittedRow[23]=== '-' ? 0 : parseFloat(splittedRow[23]));
+                totalFY2E += (splittedRow[24]=== '-' ? 0 : parseFloat(splittedRow[24]));
+                totalFY3E += (splittedRow[26]=== '-' ? 0 : parseFloat(splittedRow[26]));
     
     
                 scrapDataTypeArr.push(scrapData);
@@ -206,17 +234,20 @@ export class NdxBookParseService {
         });
     
         
-    
+        
     
         /* Parsing Data into Objects with Iterating */
-        scrapDataTypeArr.forEach((row: KoyfinScrapData, idx) => {
-        
+        scrapDataTypeArr.forEach(row => {
+
+            const share = "" + parseMarketCap(row.marketCap) / totalMarketCap * 100 + "%";
+            // console.log(share);
+
             let basicInfo = {
                 ticker: row.ticker,
                 name: row.name,
                 lastPrice: row.lastPrice,
                 marketCap: row.marketCap,
-                share: (parseFloat(row.marketCap.slice(1, row.marketCap.length-1))/100).toString(),
+                share,
                 peNTM: row.peNTM,
                 peLTM: row.peLTM,
                 evSalesNTM: row.evSalesNTM,
@@ -248,32 +279,22 @@ export class NdxBookParseService {
             };
         
             let EPSInfo = {
-            nextEarnings: row.nextEarnings,
-            epsNTM: row.epsNTM,
-            epsLTM: row.epsLTM,
-            epsFY1E: row.epsFY1E,
-            epsFY2E: row.epsFY2E,
-            epsFY3E: row.epsFY3E
+                nextEarnings: row.nextEarnings,
+                epsNTM: row.epsNTM,
+                epsLTM: row.epsLTM,
+                epsFY1E: row.epsFY1E,
+                epsFY2E: row.epsFY2E,
+                epsFY3E: row.epsFY3E
             };
-    
-            // CHART-2
-            totaly1PT+=parseFloat(ibTargetInfo.y1Variation);
-            totalm6PT+=parseFloat(ibTargetInfo.m6Variation);
-            totalm3PT+=parseFloat(ibTargetInfo.m3Variation);
-            totalm1PT+=parseFloat(ibTargetInfo.m1Variation);
-            totalw1PT+=parseFloat(ibTargetInfo.w1Variation);
-            totalcurPT+=parseFloat(ibTargetInfo.curShare);
-    
-    
+
             outputArr.push({
-            basicInfo,
-            ibTargetInfo,
-            EPSInfo
-            })
+                basicInfo,
+                ibTargetInfo,
+                EPSInfo
+            });
         });
     
         outputObj.result = outputArr;
-    
     
         outputObj.stat = {
             ratingChart: {
@@ -299,5 +320,9 @@ export class NdxBookParseService {
         return outputObj
     }
 
+}
 
+function parseMarketCap(marketCap: string): number {
+    const multiple = marketCap.search(/[bB]/) > -1 ? 1000000000 : marketCap.search(/[mM]/) > -1 ? 1000000 : 1;
+    return parseFloat(marketCap.replace(/\$/g, '')) * multiple;
 }
