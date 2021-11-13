@@ -49,6 +49,10 @@ export class NdxBookParseService {
                     return;
                 } 
 
+                if (!element) {
+                    return;
+                }
+
                 const { type } = keyTypeMap[key];
 
                 if (type == NDX_DATA_TYPE.NUMBER) {
@@ -68,7 +72,6 @@ export class NdxBookParseService {
                     parsed[key] = element;
                 }
             });
-            // console.log(parsed)
             return parsed;
         });
 
@@ -88,29 +91,29 @@ export class NdxBookParseService {
                 m3Variation, m6Variation, y1Variation, epsNTM, epsLTM, epsFY1E, epsFY2E, epsFY3E
             } = element;
 
-            summary.marketCap += marketCap;
-            summary.share += share;
-            summary.peNTM += peNTM * share;
-            summary.peLTM += peLTM * share;
-            summary.evSalesNTM += evSalesNTM * share;
-            summary.evSalesLTM += evSalesLTM * share;
-            summary.numbers += numbers;
-            summary.strongBuy += strongBuy;
-            summary.buy += buy;
-            summary.hold += hold;
-            summary.sell += sell;
-            summary.strongSell += strongSell;
-            summary.potential += potential * share;
-            summary.w1Variation += w1Variation;
-            summary.m1Variation += m1Variation;
-            summary.m3Variation += m3Variation;
-            summary.m6Variation += m6Variation;
-            summary.y1Variation += y1Variation;
-            summary.epsNTM += epsNTM;
-            summary.epsLTM += epsLTM;
-            summary.epsFY1E += epsFY1E;
-            summary.epsFY2E += epsFY2E;
-            summary.epsFY3E += epsFY3E;
+            summary.marketCap += marketCap ? marketCap: 0;
+            summary.share += share ? share : 0;
+            summary.peNTM += peNTM ? peNTM * share : 0;
+            summary.peLTM += peLTM ? peLTM * share : 0;
+            summary.evSalesNTM += evSalesNTM && share ? evSalesNTM * share : 0;
+            summary.evSalesLTM += evSalesLTM && share ? evSalesLTM * share : 0;
+            summary.numbers += numbers ? numbers : 0;
+            summary.strongBuy += strongBuy ? strongBuy : 0;
+            summary.buy += buy ? buy : 0;
+            summary.hold += hold ? hold : 0;
+            summary.sell += sell ? sell : 0;
+            summary.strongSell += strongSell ? strongSell : 0;
+            summary.potential += potential && share ? potential * share: 0;
+            summary.w1Variation += w1Variation ? w1Variation : 0;
+            summary.m1Variation += m1Variation ? m1Variation : 0;
+            summary.m3Variation += m3Variation ? m3Variation : 0;
+            summary.m6Variation += m6Variation ? m6Variation : 0;
+            summary.y1Variation += y1Variation ? y1Variation : 0;
+            summary.epsNTM += epsNTM ? epsNTM : 0;
+            summary.epsLTM += epsLTM ? epsLTM : 0;
+            summary.epsFY1E += epsFY1E ? epsFY1E : 0;
+            summary.epsFY2E += epsFY2E ? epsFY2E : 0;
+            summary.epsFY3E += epsFY3E ? epsFY3E : 0;
         });
         summary.priceTarget = ndx100Idx * (1 + summary.potential);
         summary.w1Before = ndx100Idx * (1 + summary.w1Variation);
@@ -118,7 +121,6 @@ export class NdxBookParseService {
         summary.m3Before = ndx100Idx * (1 + summary.m3Variation);
         summary.m6Before = ndx100Idx * (1 + summary.m6Variation);
         summary.y1Before = ndx100Idx * (1 + summary.y1Variation);
-        console.log(summary);
 
         // return parsedData
         return { header: NdxStockColumn, data: stockInfo, currentNdx: ndx100Idx, summary };
