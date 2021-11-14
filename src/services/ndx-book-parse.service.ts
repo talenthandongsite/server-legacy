@@ -17,6 +17,7 @@ export class NdxBookParseService {
     */
 
     parse(rawString: string): NdxBookData {
+        console.log(rawString);
         const stringParsed = this.parseRawString(rawString);
         return this.parseForFront(stringParsed);
     };
@@ -121,6 +122,8 @@ export class NdxBookParseService {
         summary.m3Before = ndx100Idx * (1 + summary.m3Variation);
         summary.m6Before = ndx100Idx * (1 + summary.m6Variation);
         summary.y1Before = ndx100Idx * (1 + summary.y1Variation);
+
+        // console.log(summary)
 
         // return parsedData
         return { header: NdxStockColumn, data: stockInfo, currentNdx: ndx100Idx, summary };
