@@ -89,8 +89,6 @@ export class NdxBookParseService {
             } = element;
 
             const share = marketCap / totalMarketCap;
-            const peNTMShare = share * peNTM;
-            const peLTMShare = share * peLTM;
             const evSalesNTMShare = share * evSalesNTM;
             const evSalesLTMShare = share * evSalesLTM;
             const potential = (priceTarget - lastPrice) / lastPrice;
@@ -104,7 +102,7 @@ export class NdxBookParseService {
 
             return { 
                 ...element, 
-                share, peNTMShare, peLTMShare, evSalesNTMShare, evSalesLTMShare, potential, 
+                share, evSalesNTMShare, evSalesLTMShare, potential, 
                 potentialShare, w1Wave, w1Variation, m1Variation, m3Variation, m6Variation,
                 y1Variation
             };
@@ -121,15 +119,13 @@ export class NdxBookParseService {
         };
         calculatedValueAppendRow.forEach(element => {
             const {
-                marketCap, share, peNTMShare, peLTMShare, evSalesNTMShare, evSalesLTMShare, numbers,
+                marketCap, share, evSalesNTMShare, evSalesLTMShare, numbers,
                 strongBuy, buy, hold, sell, strongSell, potential, w1Variation, m1Variation,
                 m3Variation, m6Variation, y1Variation, epsNTM, epsLTM, epsFY1E, epsFY2E, epsFY3E
             } = element;
 
             _summary.marketCap += marketCap ? marketCap: 0;
             _summary.share += share ? share : 0;
-            _summary.peNTM += peNTMShare;
-            _summary.peLTM += peLTMShare;
             _summary.evSalesNTM += evSalesNTMShare;
             _summary.evSalesLTM += evSalesLTMShare;
             _summary.numbers += numbers ? numbers : 0;
@@ -159,12 +155,12 @@ export class NdxBookParseService {
         _summary.y1Before = ndx100Index * (1 + _summary.y1Variation);
         _summary.w1Wave = _summary.priceTarget - _summary.w1Before;
         _summary.lastPrice = ndx100Index;
-        
-        // console.log(calculatedValueAppendRow[0]);
+        _summary.peNTM = ndx100Index / _summary.epsNTM;
+        _summary.peLTM = ndx100Index / _summary.epsLTM;
 
         const data = calculatedValueAppendRow.map(element => plainToClass(NdxStock, element, { excludeExtraneousValues: true }));
         const summary = plainToClass(NdxStock, _summary, { excludeExtraneousValues: true });
-
+        
         return { data, summary };
     }
 
