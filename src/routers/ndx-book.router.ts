@@ -3,9 +3,8 @@ import { Response, Request, NextFunction } from 'express';
 import { AccessLevelGuardMiddleware } from '../middlewares';
 
 import { BaseRouter } from '../models/bases';
-import { InternalServerError, NotFoundException } from '../models/dtos';
+import { InternalServerError, NdxBookData, NotFoundException } from '../models/dtos';
 import { ACCESS_LEVEL_TYPE } from '../models/enums';
-import { NdxBookData } from '../models/interfaces';
 import { NdxBookParseService } from "../services";
 
 enum CONTEXT {

@@ -6,4 +6,3 @@ export * from './main.interface';
 export * from './koyfin-scrap-data.interface'
 export * from './token-payload.interface';
 export * from './request-subject.interface';
-export * from './ndx-book.interface';

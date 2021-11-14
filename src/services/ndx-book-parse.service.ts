@@ -1,8 +1,7 @@
-import { 
-    KoyfinScrapData, NdxBookData, NdxEPSPrediction, NdxPrediction, NdxStock, 
-    NdxStockColumn, 
-    NdxStockFormat, NdxStockRating, NDX_DATA_TYPE, RawNdxBook 
-} from "../models/interfaces";
+import { plainToClass } from "class-transformer";
+import { NdxBookData, NdxStock } from "../models/dtos";
+
+const CENTI = 100;
 
 export class NdxBookParseService {
 
@@ -17,66 +16,101 @@ export class NdxBookParseService {
     */
 
     parse(rawString: string): NdxBookData {
-        console.log(rawString);
-        const stringParsed = this.parseRawString(rawString);
-        return this.parseForFront(stringParsed);
+        return this.parseRawString(rawString);
     };
 
-    private parseForFront(data: RawNdxBook): NdxBookData {
-        const { result, ndx100Data: { ndx100Idx } } = data;
+    private parseRawString(rawString: string): NdxBookData {
+    
+        const rawRow = rawString.split("\r\n");
+    
+        /* GET Nasdaq INDEX */
+        let ndxRow = rawRow[rawRow.length - 3].split(',');
+        let [_1, _2, _ndx100Index] = ndxRow;
+        const ndx100Index = safeParseInt(_ndx100Index);
+    
 
-        const keyTypeMap: { [key: string]: NdxStockFormat } = {}; 
-        NdxStockColumn.forEach(element => {
-            const { value } = element;
-            keyTypeMap[value] = element;
-        });
+        /* Data Parsing */
+        const basicRow = rawRow.map((element: any, index: number) => {
+            if (index == 0 || index > rawRow.length - 4) {
+                return null;
+            }
 
-        const stockInfo: NdxStock[] = result.map(({ EPSInfo, basicInfo, ibTargetInfo }) => {
-            const merged = { ...EPSInfo, ...basicInfo, ...ibTargetInfo };
-            const parsed: NdxStock = { 
-                epsFY1E: null, epsFY2E: null, epsLTM: null, epsNTM: null, nextEarnings: null, 
-                divYield: null, evSalesLTM: null, evSalesNTM: null, lastPrice: null, marketCap: null, 
-                name: null, peLTM: null, peNTM: null, share: null, ticker: null, buy: null, 
-                curShare: null, hold: null, m1Before: null, m1Variation: null, m3Before: null, 
-                m3Variation: null, m6Before: null, m6Variation: null, numbers: null, potential: null, 
-                priceTarget: null, sell: null, strongBuy: null, strongSell: null, w1Before: null, 
-                w1Variation: null, w1Wave: null, y1Before: null, y1Variation: null, epsFY3E: null
+            const column = element.split(",");
+            const [ 
+                ticker, name, _lastPrice, _marketCap, _peNTM, _peLTM, _evSalesNTM, _evSalesLTM,
+                _divYield, _numbers, _priceTarget, _w1Before, _m1Before,
+                _m3Before, _m6Before, _y1Before, _strongBuy, _buy, _hold, _sell, 
+                _strongSell, _epsNTM, _epsLTM, _epsFY1E, _epsFY2E, _nextEarnings, _epsFY3E
+            ] = column;
+
+            const lastPrice = safeParseFloat(_lastPrice);
+            const marketCap = parseMarketCap(_marketCap);
+            const peNTM = safeParseFloat(_peNTM)
+            const peLTM = safeParseFloat(_peLTM);
+            const evSalesNTM = safeParseFloat(_evSalesNTM);
+            const evSalesLTM = safeParseFloat(_evSalesLTM);
+            const divYield = safePercentage(_divYield);
+            const numbers = safeParseInt(_numbers);
+            const priceTarget = safeParseFloat(_priceTarget);
+            const w1Before = safeParseFloat(_w1Before);
+            const m1Before = safeParseFloat(_m1Before);
+            const m3Before = safeParseFloat(_m3Before);
+            const m6Before = safeParseFloat(_m6Before);
+            const y1Before = safeParseFloat(_y1Before);
+            const strongBuy = safeParseInt(_strongBuy);
+            const buy = safeParseInt(_buy);
+            const hold = safeParseInt(_hold);
+            const sell = safeParseInt(_sell);
+            const strongSell = safeParseInt(_strongSell);
+            const epsNTM = safeParseFloat(_epsNTM);
+            const epsLTM = safeParseFloat(_epsLTM);
+            const epsFY1E = safeParseFloat(_epsFY1E);
+            const epsFY2E = safeParseFloat(_epsFY2E);
+            const epsFY3E = safeParseFloat(_epsFY3E);
+            const [ _, month, day, year ] = _nextEarnings.split(' ');
+            const nextEarnings = new Date(year + month + parseInt(day));
+
+            return { 
+                ticker, name, lastPrice, marketCap, peNTM, peLTM, evSalesNTM, evSalesLTM, divYield,
+                numbers, priceTarget, w1Before, m1Before, m3Before, m6Before,
+                y1Before, strongBuy, buy, hold, sell, strongSell, epsNTM, epsLTM, epsFY1E,
+                epsFY2E, epsFY3E, nextEarnings
             };
+        }).filter(element => element);
+    
+        const totalMarketCap = basicRow.reduce((prev, current) => {
+            return prev + current.marketCap;
+        }, 0);
 
-            Object.keys(merged).map(key => {
-                const element: string = merged[key];
+        const calculatedValueAppendRow = basicRow.map(element => {
+            const { 
+                marketCap, peNTM, peLTM, evSalesNTM, evSalesLTM, priceTarget, lastPrice, w1Before,
+                m1Before, m3Before, m6Before, y1Before
+            } = element;
 
-                if (!(key in keyTypeMap)) {
-                    return;
-                } 
+            const share = marketCap / totalMarketCap;
+            const peNTMShare = share * peNTM;
+            const peLTMShare = share * peLTM;
+            const evSalesNTMShare = share * evSalesNTM;
+            const evSalesLTMShare = share * evSalesLTM;
+            const potential = (priceTarget - lastPrice) / lastPrice;
+            const potentialShare = share * potential;
+            const w1Wave = priceTarget - w1Before;
+            const w1Variation = ( (w1Before - lastPrice) / lastPrice ) * share;
+            const m1Variation = ( (m1Before - lastPrice) / lastPrice ) * share;
+            const m3Variation = ( (m3Before - lastPrice) / lastPrice ) * share;
+            const m6Variation = ( (m6Before - lastPrice) / lastPrice ) * share;
+            const y1Variation = ( (y1Before - lastPrice) / lastPrice ) * share;
 
-                if (!element) {
-                    return;
-                }
-
-                const { type } = keyTypeMap[key];
-
-                if (type == NDX_DATA_TYPE.NUMBER) {
-                    parsed[key] = parseFloat(element);
-                } else if (type == NDX_DATA_TYPE.PERCENTAGE || type == NDX_DATA_TYPE.VARIATION) {
-                    parsed[key] = parseFloat(element) / 100;
-                } else if (type == NDX_DATA_TYPE.TIMES) {
-                    parsed[key] = parseFloat(element);
-                } else if (type == NDX_DATA_TYPE.MARKET_CAP) {
-                    parsed[key] = parseMarketCap(element);
-                } else if (type == NDX_DATA_TYPE.PRICE) {
-                    parsed[key] = parseFloat(element);
-                } else if (type == NDX_DATA_TYPE.DATE) {
-                    const [ _, month, day, year ] = element.split(' ');
-                    parsed[key] = new Date(year + month + parseInt(day));
-                } else {
-                    parsed[key] = element;
-                }
-            });
-            return parsed;
+            return { 
+                ...element, 
+                share, peNTMShare, peLTMShare, evSalesNTMShare, evSalesLTMShare, potential, 
+                potentialShare, w1Wave, w1Variation, m1Variation, m3Variation, m6Variation,
+                y1Variation
+            };
         });
-
-        const summary: NdxStock = { 
+        
+        const _summary = { 
             epsFY1E: null, epsFY2E: null, epsLTM: null, epsNTM: null, nextEarnings: null, 
             divYield: 0, evSalesLTM: null, evSalesNTM: null, lastPrice: null, marketCap: null, 
             name: null, peLTM: null, peNTM: null, share: null, ticker: null, buy: null, 
@@ -85,244 +119,53 @@ export class NdxBookParseService {
             priceTarget: null, sell: null, strongBuy: null, strongSell: null, w1Before: null, 
             w1Variation: null, w1Wave: null, y1Before: null, y1Variation: null, epsFY3E: null
         };
-        stockInfo.forEach(element => {
-            const { 
-                marketCap, share, peNTM, peLTM, evSalesNTM, evSalesLTM, numbers,
+        calculatedValueAppendRow.forEach(element => {
+            const {
+                marketCap, share, peNTMShare, peLTMShare, evSalesNTMShare, evSalesLTMShare, numbers,
                 strongBuy, buy, hold, sell, strongSell, potential, w1Variation, m1Variation,
                 m3Variation, m6Variation, y1Variation, epsNTM, epsLTM, epsFY1E, epsFY2E, epsFY3E
             } = element;
 
-            summary.marketCap += marketCap ? marketCap: 0;
-            summary.share += share ? share : 0;
-            summary.peNTM += peNTM ? peNTM * share : 0;
-            summary.peLTM += peLTM ? peLTM * share : 0;
-            summary.evSalesNTM += evSalesNTM && share ? evSalesNTM * share : 0;
-            summary.evSalesLTM += evSalesLTM && share ? evSalesLTM * share : 0;
-            summary.numbers += numbers ? numbers : 0;
-            summary.strongBuy += strongBuy ? strongBuy : 0;
-            summary.buy += buy ? buy : 0;
-            summary.hold += hold ? hold : 0;
-            summary.sell += sell ? sell : 0;
-            summary.strongSell += strongSell ? strongSell : 0;
-            summary.potential += potential && share ? potential * share: 0;
-            summary.w1Variation += w1Variation ? w1Variation : 0;
-            summary.m1Variation += m1Variation ? m1Variation : 0;
-            summary.m3Variation += m3Variation ? m3Variation : 0;
-            summary.m6Variation += m6Variation ? m6Variation : 0;
-            summary.y1Variation += y1Variation ? y1Variation : 0;
-            summary.epsNTM += epsNTM ? epsNTM : 0;
-            summary.epsLTM += epsLTM ? epsLTM : 0;
-            summary.epsFY1E += epsFY1E ? epsFY1E : 0;
-            summary.epsFY2E += epsFY2E ? epsFY2E : 0;
-            summary.epsFY3E += epsFY3E ? epsFY3E : 0;
+            _summary.marketCap += marketCap ? marketCap: 0;
+            _summary.share += share ? share : 0;
+            _summary.peNTM += peNTMShare;
+            _summary.peLTM += peLTMShare;
+            _summary.evSalesNTM += evSalesNTMShare;
+            _summary.evSalesLTM += evSalesLTMShare;
+            _summary.numbers += numbers ? numbers : 0;
+            _summary.strongBuy += strongBuy ? strongBuy : 0;
+            _summary.buy += buy ? buy : 0;
+            _summary.hold += hold ? hold : 0;
+            _summary.sell += sell ? sell : 0;
+            _summary.strongSell += strongSell ? strongSell : 0;
+            _summary.potential += potential && share ? potential * share: 0;
+            _summary.w1Variation += w1Variation ? w1Variation : 0;
+            _summary.m1Variation += m1Variation ? m1Variation : 0;
+            _summary.m3Variation += m3Variation ? m3Variation : 0;
+            _summary.m6Variation += m6Variation ? m6Variation : 0;
+            _summary.y1Variation += y1Variation ? y1Variation : 0;
+            _summary.epsNTM += epsNTM ? epsNTM : 0;
+            _summary.epsLTM += epsLTM ? epsLTM : 0;
+            _summary.epsFY1E += epsFY1E ? epsFY1E : 0;
+            _summary.epsFY2E += epsFY2E ? epsFY2E : 0;
+            _summary.epsFY3E += epsFY3E ? epsFY3E : 0;
         });
-        summary.priceTarget = ndx100Idx * (1 + summary.potential);
-        summary.w1Before = ndx100Idx * (1 + summary.w1Variation);
-        summary.m1Before = ndx100Idx * (1 + summary.m1Variation);
-        summary.m3Before = ndx100Idx * (1 + summary.m3Variation);
-        summary.m6Before = ndx100Idx * (1 + summary.m6Variation);
-        summary.y1Before = ndx100Idx * (1 + summary.y1Variation);
 
-        // console.log(summary)
-
-        // return parsedData
-        return { header: NdxStockColumn, data: stockInfo, currentNdx: ndx100Idx, summary };
-    }
-
-    private parseRawString(rawString: string): RawNdxBook {
-
-        let scrapDataTypeArr: KoyfinScrapData[] = [];
-    
-        /* Data Arrays for API */
-        let outputObj:any = {};
-        let outputArr=[ ];
-    
-        let splittedStr = rawString.split("\r\n");
-        let totalMarketCap = 0;
-
-        /* Chart Data */
-    
-        //Base Data
-        let totalLastPrice = 0;
-    
-        // CHART-1
-        let totalStrongSell = 0;
-        let totalSell = 0;
-        let totalHold = 0;
-        let totalBuy = 0;
-        let totalStrongBuy = 0;
-    
-    
-        //Chart-4
-        let totalNTM = 0;
-        let totalFY1E = 0;
-        let totalFY2E = 0;
-        let totalFY3E = 0;
-    
-        /* GET Nasdaq INDEX */
-        let splitted = splittedStr[splittedStr.length-3].split(',');
-        let ndx100Idx = splitted[2];
-    
-    
-        let tpTotalMarketCap = 0;
-    
-        /* Data Parsing from CSV File */
-        splittedStr.forEach((row: any, idx: number) => {
-            let splittedRow = row.split(",");
-            if (idx !== 0 && idx <= splittedStr.length - 4) {
-                
-                let scrapData: KoyfinScrapData = {
-                    ticker: splittedRow[0],
-                    name: splittedRow[1],
-                    lastPrice: splittedRow[2],
-                    marketCap: splittedRow[3],
-                    peNTM: splittedRow[4],
-                    peLTM: splittedRow[5],
-                    evSalesNTM: splittedRow[6],
-                    evSalesLTM: splittedRow[7],
-                    divYield: splittedRow[8],
-                    priceTargetNumbers: splittedRow[9],
-                    priceTarget: splittedRow[10] === '-' ? 0 : splittedRow[10],
-                    w1PriceTarget: splittedRow[11]  === '-' ? 0 : splittedRow[11],
-                    m1PriceTarget: splittedRow[12]  === '-' ? 0 : splittedRow[12],
-                    m3PriceTarget: splittedRow[13]  === '-' ? 0 : splittedRow[13],
-                    m6PriceTarget: splittedRow[14]  === '-' ? 0 : splittedRow[14],
-                    y1PriceTarget: splittedRow[15]  === '-' ? 0 : splittedRow[15],
-                    strongBuy: splittedRow[16],
-                    buy: splittedRow[17],
-                    hold: splittedRow[18],
-                    sell: splittedRow[19],
-                    strongSell: splittedRow[20],
-                    epsNTM: splittedRow[21],
-                    epsLTM: splittedRow[22],
-                    epsFY1E: splittedRow[23],
-                    epsFY2E: splittedRow[24],
-                    nextEarnings: splittedRow[25],
-                    epsFY3E: splittedRow[26],
-                    w52High: splittedRow[27],
-                    w52Low: splittedRow[28],
-                };
-    
-                console.log(splittedRow[25], splittedRow[26], splittedRow[27])
-                /* Accumulate Total MarketCap */
-                let marketCap = 0;
-                if (typeof(splittedRow[3]) === 'string'){
-                    marketCap = parseMarketCap(splittedRow[3]);
-                    totalMarketCap += marketCap;
-                }
-
-                /* Sum of total LastPrice */
-                let lastPrice = (splittedRow[2] === '-' ? 0 : parseFloat(splittedRow[2]))
-                totalLastPrice += lastPrice;
-    
-                /* issuedShares, tpTotalMarketCap */
-                let issuedShares = (marketCap*Math.pow(10, 9))/lastPrice;
-                tpTotalMarketCap+=(parseFloat(splittedRow[10] === '-' ? 0 : splittedRow[10]) * issuedShares)
-                
-                /* CHART-1 */
-                totalStrongSell += parseFloat(splittedRow[20]);
-                totalSell += parseFloat(splittedRow[19]);
-                totalHold += parseFloat(splittedRow[18]);
-                totalBuy += parseFloat(splittedRow[17]);
-                totalStrongBuy += parseFloat(splittedRow[16]);
-    
-    
-                /* CHART-4 */
-                totalNTM += (splittedRow[21]=== '-' ? 0 : parseFloat(splittedRow[21]));
-                totalFY1E += (splittedRow[23]=== '-' ? 0 : parseFloat(splittedRow[23]));
-                totalFY2E += (splittedRow[24]=== '-' ? 0 : parseFloat(splittedRow[24]));
-                totalFY3E += (splittedRow[26]=== '-' ? 0 : parseFloat(splittedRow[26]));
-    
-    
-                scrapDataTypeArr.push(scrapData);
-            }
-        });
-    
+        _summary.priceTarget = ndx100Index * (1 + _summary.potential);
+        _summary.w1Before = ndx100Index * (1 + _summary.w1Variation);
+        _summary.m1Before = ndx100Index * (1 + _summary.m1Variation);
+        _summary.m3Before = ndx100Index * (1 + _summary.m3Variation);
+        _summary.m6Before = ndx100Index * (1 + _summary.m6Variation);
+        _summary.y1Before = ndx100Index * (1 + _summary.y1Variation);
+        _summary.w1Wave = _summary.priceTarget - _summary.w1Before;
+        _summary.lastPrice = ndx100Index;
         
-        
-    
-        /* Parsing Data into Objects with Iterating */
-        scrapDataTypeArr.forEach(row => {
+        // console.log(calculatedValueAppendRow[0]);
 
-            const share = "" + parseMarketCap(row.marketCap) / totalMarketCap * 100 + "%";
-            // console.log(share);
+        const data = calculatedValueAppendRow.map(element => plainToClass(NdxStock, element, { excludeExtraneousValues: true }));
+        const summary = plainToClass(NdxStock, _summary, { excludeExtraneousValues: true });
 
-            let basicInfo = {
-                ticker: row.ticker,
-                name: row.name,
-                lastPrice: row.lastPrice,
-                marketCap: row.marketCap,
-                share,
-                peNTM: row.peNTM,
-                peLTM: row.peLTM,
-                evSalesNTM: row.evSalesNTM,
-                evSalesLTM: row.evSalesLTM,
-                divYield: row.divYield,
-            }
-    
-            let ibTargetInfo = {
-                numbers: row.priceTargetNumbers,
-                strongBuy: row.strongBuy,
-                buy: row.buy,
-                hold: row.hold,
-                sell: row.sell,
-                strongSell: row.strongSell,
-                priceTarget: row.priceTarget,
-                potential: ((parseFloat(row.priceTarget)-parseFloat(row.lastPrice))/parseFloat(row.lastPrice) * 100).toString(),
-                curShare: ((parseFloat(row.priceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
-                w1Wave: (parseFloat(row.priceTarget)-parseFloat(row.w1PriceTarget)).toString(),
-                w1Before: row.w1PriceTarget,
-                w1Variation: ((parseFloat(row.w1PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
-                m1Before: row.m1PriceTarget,
-                m1Variation: ((parseFloat(row.m1PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
-                m3Before: row.m3PriceTarget,
-                m3Variation: ((parseFloat(row.m3PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
-                m6Before: row.m6PriceTarget,
-                m6Variation: ((parseFloat(row.m6PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
-                y1Before: row.y1PriceTarget,
-                y1Variation: ((parseFloat(row.y1PriceTarget)-parseFloat(row.lastPrice))/(parseFloat(row.lastPrice) * parseFloat(basicInfo.share)) * 100).toString(),
-            };
-        
-            let EPSInfo = {
-                nextEarnings: row.nextEarnings,
-                epsNTM: row.epsNTM,
-                epsLTM: row.epsLTM,
-                epsFY1E: row.epsFY1E,
-                epsFY2E: row.epsFY2E,
-                epsFY3E: row.epsFY3E
-            };
-
-            outputArr.push({
-                basicInfo,
-                ibTargetInfo,
-                EPSInfo
-            });
-        });
-    
-        outputObj.result = outputArr;
-    
-        outputObj.stat = {
-            ratingChart: {
-                totalStrongSell,
-                totalSell,
-                totalHold,
-                totalBuy,
-                totalStrongBuy
-            },
-            epsChangeChart: {
-                totalNTM,
-                totalFY1E,
-                totalFY2E,
-                totalFY3E
-            }
-        }
-    
-        outputObj.ndx100Data = {
-            ndx100Idx: parseFloat(ndx100Idx),
-            ndx100TargetPrice: ((tpTotalMarketCap * parseFloat(ndx100Idx))/(totalMarketCap*Math.pow(10, 9)))
-        }
-    
-        return outputObj
+        return { data, summary };
     }
 
 }
@@ -330,4 +173,16 @@ export class NdxBookParseService {
 function parseMarketCap(marketCap: string): number {
     const multiple = marketCap.search(/[bB]/) > -1 ? 1000000000 : marketCap.search(/[mM]/) > -1 ? 1000000 : 1;
     return parseFloat(marketCap.replace(/\$/g, '')) * multiple;
+}
+
+function safeParseFloat(numbers: string): number {
+    return isNaN(parseFloat(numbers)) ? null : parseFloat(numbers);
+}
+
+function safeParseInt(numbers: string): number {
+    return isNaN(parseInt(numbers)) ? null : parseInt(numbers);
+}
+
+function safePercentage(numbers: string): number {
+    return isNaN(parseFloat(numbers)) ? null : parseFloat(numbers) / CENTI;
 }

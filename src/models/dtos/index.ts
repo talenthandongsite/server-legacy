@@ -7,3 +7,4 @@ export * from './verify-hisnet.dto';
 export * from './register-kakao-token.dto';
 export * from './login.dto';
 export * from './member.dto';
+export * from './ndx-book.dto';
