@@ -1,3 +1,8 @@
+export enum CONFIG_KEY {
+    MONGO_CONNECTION_STRING = 'MONGO_CONNECTION_STRING',
+    MONGO_DB_NAME = 'MONGO_DB_NAME',
+}
+
 export class ConfigService {
     
     DB_TYPE: 'mysql' = 'mysql';
@@ -12,8 +17,19 @@ export class ConfigService {
     JWT_ISSUER: string = "https://talenthandong.site";
     JWT_EXPIRATION_MILISECOND: number = 1000 * 60 * 60 * 24;
     
+    MONGO_CONNECTION_STRING = 'mongodb+srv://talenthandongdev:nasdaq20000!@cluster0.rrf0l.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
+    MONGO_DB_NAME = 'talent';
+
     constructor() {
         // TODO: the configs should be loaded from env files
+    }
+
+    getValue(key: CONFIG_KEY | string) {
+        if (key in this) {
+            return this[key];
+        } else {
+            throw(`Config named \'${key}\' Doesn\'t exist`);
+        }
     }
 
 }
