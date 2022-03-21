@@ -25,7 +25,6 @@ jobs:
       - name: Execute deploy script
         uses: appleboy/ssh-action@master
         env: 
-          SIMPLE: "SIMPLE"
           DOCKER_IMAGE_TAG: ${{ secrets.DOCKER_IMAGE_TAG }}
           DOCKER_CONTAINER_NAME: ${{ secrets.DOCKER_CONTAINER_NAME}}
           DOCKER_NETWORK_NAME: ${{ secrets.DOCKER_NETWORK_NAME }}
@@ -35,12 +34,13 @@ jobs:
           key: ${{ secrets.SERVER_ACCESS_KEY }}
           port: 22
           script_stop: true
+          envs: DOCKER_IMAGE_TAG,DOCKER_CONTAINER_NAME,DOCKER_NETWORK_NAME
           script: |
             cd ~/.github/server
             git checkout master
             git stash
             git pull origin master
             chmod 755 deployments/deploy.sh
-            echo $SIMPLE
+            echo $DOCKER_IMAGE_TAG
             export DOCKER_IMAGE_TAG DOCKER_CONTAINER_NAME DOCKER_NETWORK_NAME
             deployments/deploy.sh 
