@@ -40,5 +40,6 @@ jobs:
             git stash
             git pull origin master
             chmod 755 deployments/deploy.sh
+            echo $DOCKER_IMAGE_TAG
             export DOCKER_IMAGE_TAG DOCKER_CONTAINER_NAME DOCKER_NETWORK_NAME
             deploy.sh 
