@@ -4,6 +4,5 @@ COPY package.json ./
 RUN npm install
 COPY webpack.config.js tsconfig.json ./
 COPY src/ /build/src/
-COPY .env ./
 RUN npm run build
 CMD [ "node", "dist/main" ]
