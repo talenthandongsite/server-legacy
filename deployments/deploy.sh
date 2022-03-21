@@ -1,4 +1,4 @@
-docker build -f dockerfile -t ${DOCKER_IMAGE_TAG}:latest ..
+docker build -f deployments/dockerfile -t ${DOCKER_IMAGE_TAG}:latest .
 
 docker ps -f name=${DOCKER_CONTAINER_NAME} -q | xargs --no-run-if-empty docker container stop
 docker container ls -a -fname=${DOCKER_CONTAINER_NAME} -q | xargs -r docker container rm

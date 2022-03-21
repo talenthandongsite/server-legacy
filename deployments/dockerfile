@@ -1,13 +1,9 @@
-FROM node:lts-slim
-WORKDIR /
-COPY . .
-RUN apk add --no-cache --virtual .gyp \
-		python \
-		make \
-		g++ \
-	&& npm install \
-	&& apk del .gyp
+FROM node:lts-slim AS builder
+WORKDIR /build/
+COPY package.json ./
+RUN npm install
+COPY webpack.config.js tsconfig.json ./
+COPY src/ /build/src/
+COPY .env ./
 RUN npm run build
-WORKDIR /
-EXPOSE 3000
-CMD ["npm", "run", "start"]
+CMD [ "node", "dist/main" ]

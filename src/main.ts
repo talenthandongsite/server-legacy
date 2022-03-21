@@ -9,11 +9,10 @@ import { json } from 'express';
 
 import { Repository } from 'typeorm';
 
-import { MemberRouter, NdxBookRouter, TicketRouter, TokenRouter, UtilRouter } from './routers';
-import { ConfigService, OrmService, AuthService, HisnetScrapService, NdxBookParseService, MongoService } from './services';
+import { ConfigService, HisnetScrapService, NdxBookParseService } from './services';
 import { globalErrorHandler } from './error-handlers';
 import { AccessLevelGuardMiddleware, endpointAccessLogMiddleware } from "./middlewares";
-
+import { NdxBookRouter, UtilRouter } from "./routers";
 import { Member, MemberHistory, Ticket } from './models/entities';
 import { MainOptions } from './models/interfaces';
 
@@ -27,7 +26,6 @@ export function main(options: MainOptions) {
 
 	// const ormService: OrmService = new OrmService(configService, [ Member, Ticket, MemberHistory ]);
 	// const authService: AuthService = new AuthService(configService);
-	const mongoService: MongoService = (new MongoService(configService)).forRoot();
 	const accessLevelGuardMiddleware: AccessLevelGuardMiddleware = new AccessLevelGuardMiddleware(configService);
 
 	/* Regular Scrapping from Koyfin */
@@ -41,7 +39,6 @@ export function main(options: MainOptions) {
 
 		// const memberRouter: MemberRouter = new MemberRouter(accessLevelGuardMiddleware, authService, memberRepository, memberHistoryRepository);
 		// const ticketRouter: TicketRouter = new TicketRouter(ticketRepository);
-		const tokenRouter: TokenRouter = new TokenRouter(mongoService);
 		const ndxBookRouter: NdxBookRouter = new NdxBookRouter(accessLevelGuardMiddleware, ndxBookParseService);
 		const utilRouter: UtilRouter = new UtilRouter(hisnetScrapService);
 
@@ -64,7 +61,6 @@ export function main(options: MainOptions) {
 
 		// app.use('/member', memberRouter.getRouter());
 		// app.use('/ticket', ticketRouter.getRouter());
-		app.use('/token', tokenRouter.getRouter());
 		app.use('/ndxBook', ndxBookRouter.getRouter());
 		app.use('/util', utilRouter.getRouter());
 
