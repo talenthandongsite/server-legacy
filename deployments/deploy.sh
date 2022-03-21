@@ -1,4 +1,4 @@
-NAME=${git config --get remote.origin.url | sed 's/.*\/\([^ ]*\/[^.]*\).*/\1/'}
+NAME=$(git config --get remote.origin.url | sed 's/.*\/\([^ ]*\/[^.]*\).*/\1/')
 TAG=latest
 EXPOSE=3000
 
