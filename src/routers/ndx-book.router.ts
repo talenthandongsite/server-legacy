@@ -56,6 +56,7 @@ export class NdxBookRouter implements BaseRouter {
                 console.log(`[Recieved][${new Date().toISOString()}]`);
                 res.send({ status: true });
             } catch(error) {
+                console.log(`[Error][${new Date().toISOString()}]\n${error}`);
                 next(new InternalServerError(error));
             }
         }

@@ -36,7 +36,7 @@ jobs:
           script_stop: true
           envs: DOCKER_IMAGE_TAG,DOCKER_CONTAINER_NAME,DOCKER_NETWORK_NAME
           script: |
-            cd ~/.github/server
+            cd ~/.github/server-legacy
             git checkout master
             git stash
             git pull origin master
