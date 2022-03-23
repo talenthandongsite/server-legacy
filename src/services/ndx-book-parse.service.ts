@@ -16,12 +16,11 @@ export class NdxBookParseService {
     */
 
     parse(rawString: string): NdxBookData {
-        console.log(rawString);
         return this.parseRawString(rawString);
     };
 
     private parseRawString(rawString: string): NdxBookData {
-    
+        console.log(1);
         const rawRow = rawString.split("\r\n");
     
         /* GET Nasdaq INDEX */
@@ -29,6 +28,7 @@ export class NdxBookParseService {
         let [_1, _2, _ndx100Index] = ndxRow;
         const ndx100Index = safeParseInt(_ndx100Index);
     
+        console.log(2);
 
         /* Data Parsing */
         const basicRow = rawRow.map((element: any, index: number) => {

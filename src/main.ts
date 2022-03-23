@@ -56,7 +56,7 @@ export function main(options: MainOptions) {
 
 
 		app.get('/', (req, res) => {
-			res.status(200).send("OK");
+			res.status(200).send("Legacy API Server");
 		});
 
 		// app.use('/member', memberRouter.getRouter());

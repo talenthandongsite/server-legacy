@@ -49,6 +49,7 @@ export class NdxBookRouter implements BaseRouter {
     private nextNdxBook() {
         return (req: Request, res: Response, next: NextFunction) => {
             const { data: rawData } = req.body;
+            console.log(rawData);
 
             try {
                 this.ndxBookData = this.ndxBookParseService.parse(rawData);
