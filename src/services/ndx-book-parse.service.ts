@@ -16,6 +16,7 @@ export class NdxBookParseService {
     */
 
     parse(rawString: string): NdxBookData {
+        console.log(rawString);
         return this.parseRawString(rawString);
     };
 
