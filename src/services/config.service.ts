@@ -20,6 +20,9 @@ export class ConfigService {
     MONGO_CONNECTION_STRING = 'mongodb+srv://talenthandongdev:nasdaq20000!@cluster0.rrf0l.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
     MONGO_DB_NAME = 'talent';
 
+    KOYFIN_USERNAME = 'handongtalent@gmail.com';
+    KOYFIN_PASSWORD = 'nasdaq15000!';
+
     constructor() {
         // TODO: the configs should be loaded from env files
     }
