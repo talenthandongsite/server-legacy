@@ -2,6 +2,8 @@ var nodeExternals = require('webpack-node-externals');
 var webpack = require('webpack');
 var path = require('path');
 
+var outputName = 'server-legacy.js';
+
 /* helper function to get into build directory */
 var distPath = function ( name ) {
   	return path.join(name);
@@ -10,10 +12,7 @@ var distPath = function ( name ) {
 var webpack_opts = {
   	entry: './src/main.ts',
 	target: 'node',
-	output: {
-		filename: distPath('main.js'),
-		libraryTarget: "commonjs2"
-	},
+	output: { filename: distPath(outputName) },
 	resolve: {
 		extensions: ['.ts', '.js'],
 		modules: [ 'node_modules', 'src' ]
