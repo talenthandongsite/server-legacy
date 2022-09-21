@@ -1,7 +1,7 @@
 import { plainToClass } from 'class-transformer';
 import { launch, Browser, Page } from 'puppeteer';
 import { parseAbbribiatedNumber, safeParseFloat, safeParseInt, safePercentage } from '../functions/string-parser';
-import { NdxStock } from '../models/dtos';
+import { NdxBookData, NdxStock } from '../models/dtos';
 import { ConfigService } from './config.service';
 
 const NAVIGATION_TIMEOUT = 50000;
@@ -13,16 +13,16 @@ const WATCHLIST_URL = "https://app.koyfin.com/myd/4af3aeda-0dfc-417d-a102-3f4c03
 export class NdxBookCrawlService {
 
     private mutexLock: boolean = false;
-    private currentJob: Promise<{ jobId: number, data: NdxStock[], summary: NdxStock }> = null;
+    private currentJob: Promise<NdxBookData> = null;
     private jobId: number = 0;
 
     constructor(private config: ConfigService) { }
 
     /**
      * @decription crawlData method is to crawling Nasdaq data from external webpage and return the result. If crawling is running, it will not run function additionally, rather it will return the already running function result.
-     * @returns {Promise<{ data: NdxStock[], summary: NdxStock }>} data is serialized to data, summary.
+     * @returns {Promise<NdxBookData>} data is serialized to data, summary.
     */
-    crawlData(): Promise<{ jobId: number, data: NdxStock[], summary: NdxStock }> {
+    crawlData(): Promise<NdxBookData> {
         if (this.mutexLock) {
             console.log("concurrent job: ", this.jobId - 1);
             return this.currentJob;
@@ -123,7 +123,7 @@ export class NdxBookCrawlService {
     /**
      * 
     */
-    private parseString(jobId: number, rawData: string[][]): { jobId: number, data: NdxStock[], summary: NdxStock } {
+    private parseString(jobId: number, rawData: string[][]): NdxBookData {
     
         /* GET Nasdaq INDEX */
         let ndxRow = rawData[rawData.length - 1];
@@ -262,6 +262,6 @@ export class NdxBookCrawlService {
         const data = calculatedValueAppendRow.map(element => plainToClass(NdxStock, element, { excludeExtraneousValues: true }));
         const summary = plainToClass(NdxStock, _summary, { excludeExtraneousValues: true });
         
-        return { jobId, data, summary };
+        return { data, summary };
     }
 }

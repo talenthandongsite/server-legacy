@@ -5,39 +5,37 @@ import * as dotenv from 'dotenv';
 import * as cors from "cors";
 import { json } from 'express';
 
-import { ConfigService, DataCacheService, HisnetScrapService, NdxBookCrawlService } from './services';
+import { Schedule } from './schedule';
+import { ConfigService, DataCacheService, NdxBookCrawlService } from './services';
 import { globalErrorHandler } from './error-handlers';
-import { AccessLevelGuardMiddleware, endpointAccessLogMiddleware } from "./middlewares";
-import { NdxBookRouter, UtilRouter } from "./routers";
-import { MainOptions } from './models/interfaces';
+import { endpointAccessLogMiddleware } from "./middlewares";
+import { NdxBookRouter } from "./routers";
 
 //Use .env Config File.
 dotenv.config();
 
-async function main(options: MainOptions) {
+type MainConfig = {
+    enableCors: boolean;
+    env: string;
+    port: number;
+    verbose?: boolean;
+}
+
+async function main(options: MainConfig) {
 
 	// TODO: pass env to config service
 	const configService: ConfigService = new ConfigService();
-	const dataCahceService: DataCacheService = new DataCacheService();
+	const dataCacheService: DataCacheService = new DataCacheService();
 
-	// const ormService: OrmService = new OrmService(configService, [ Member, Ticket, MemberHistory ]);
-	// const authService: AuthService = new AuthService(configService);
-	const accessLevelGuardMiddleware: AccessLevelGuardMiddleware = new AccessLevelGuardMiddleware(configService);
-
-	/* Regular Scrapping from Koyfin */
-	const hisnetScrapService: HisnetScrapService = new HisnetScrapService();
 	const ndxBookCrawlService: NdxBookCrawlService = new NdxBookCrawlService(configService);
 
-	const ndxBookRouter: NdxBookRouter = new NdxBookRouter(accessLevelGuardMiddleware, dataCahceService);
-	const utilRouter: UtilRouter = new UtilRouter(hisnetScrapService);
+	const ndxBookRouter: NdxBookRouter = new NdxBookRouter(dataCacheService);
+
+	const schedule: Schedule = new Schedule(dataCacheService, ndxBookCrawlService);
+	schedule.start();
 
 	const app = express(); 
-	const timeout = require("connect-timeout");
-	const unless = require("express-unless");
-	const to = timeout(300000);
-	to.unless = unless;
 	
-	app.use(to.unless({ path: [{ url: "/url_v2" }] })); // 10초안에 응답 없으면 response 종료
 	app.use(cors());
 	app.use(json());
 	app.use(endpointAccessLogMiddleware());
@@ -46,20 +44,18 @@ async function main(options: MainOptions) {
 		res.status(200).send("Legacy API Server");
 	});
 
-	// app.use('/member', memberRouter.getRouter());
-	// app.use('/ticket', ticketRouter.getRouter());
 	app.use('/ndxBook', ndxBookRouter.getRouter());
-	app.use('/util', utilRouter.getRouter());
 
-	console.log('Router loaded')
-
-	// 
 	app.use(globalErrorHandler());
 	
 	process.on("uncaughtException", err => {
 		//예상치 못한 예외 처리
 		console.log("uncaughtException occurred! : " + err);
 	});
+
+
+	const data = await ndxBookCrawlService.crawlData()
+	dataCacheService.setNdxBookData(data);
 
 	app.listen(options.port, () => {
 		console.log(`Server is listening on port ${ options.port }`)
