@@ -1,15 +1,19 @@
-node_modules/
-coverage/
+# dependencies
+node_modules
+
+# build output
 dist/
-.tmp/
-*.d.ts
-*.log
-*.tgz
-*.yaml
-.idea/
+
+# cached or misc files
+.tmp
+.idea
 .DS_Store
 package-lock.json
 yarn.lock
 
+# data files
 **/*.csv
 
+# secrets
+.env
+env

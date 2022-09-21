@@ -1,7 +1,6 @@
 import 'reflect-metadata';
 
 import * as express from "express";
-import * as dotenv from 'dotenv';
 import * as cors from "cors";
 import { json } from 'express';
 
@@ -10,9 +9,6 @@ import { ConfigService, DataCacheService, NdxBookCrawlService } from './services
 import { globalErrorHandler } from './error-handlers';
 import { endpointAccessLogMiddleware } from "./middlewares";
 import { NdxBookRouter } from "./routers";
-
-//Use .env Config File.
-dotenv.config();
 
 type MainConfig = {
     enableCors: boolean;
@@ -24,7 +20,7 @@ type MainConfig = {
 async function main(options: MainConfig) {
 
 	// TODO: pass env to config service
-	const configService: ConfigService = new ConfigService();
+	const configService: ConfigService = new ConfigService(process.env);
 	const dataCacheService: DataCacheService = new DataCacheService();
 
 	const ndxBookCrawlService: NdxBookCrawlService = new NdxBookCrawlService(configService);
@@ -49,7 +45,6 @@ async function main(options: MainConfig) {
 	app.use(globalErrorHandler());
 	
 	process.on("uncaughtException", err => {
-		//예상치 못한 예외 처리
 		console.log("uncaughtException occurred! : " + err);
 	});
 
@@ -63,9 +58,10 @@ async function main(options: MainConfig) {
 }
 
 (async () => {
+
 	const PORT = parseInt(process.env.PORT || "3000", 10);
-	const NODE_ENV = process.env.NODE_ENV !== "production" ? "dev" : "production";
-	const ENABLE_CORS = NODE_ENV !== "production";
+	const NODE_ENV = process.env.NODE_ENV != "production" ? "dev" : "production";
+	const ENABLE_CORS = NODE_ENV != "production";
 
 	await main({
 		enableCors: ENABLE_CORS,

@@ -2,7 +2,7 @@ import { plainToClass } from 'class-transformer';
 import { launch, Browser, Page } from 'puppeteer';
 import { parseAbbribiatedNumber, safeParseFloat, safeParseInt, safePercentage } from '../functions/string-parser';
 import { NdxBookData, NdxStock } from '../models/dtos';
-import { ConfigService } from './config.service';
+import { ConfigService, CONFIG_KEY } from './config.service';
 
 const NAVIGATION_TIMEOUT = 50000;
 const TIMEOUT = 100000;
@@ -24,7 +24,6 @@ export class NdxBookCrawlService {
     */
     crawlData(): Promise<NdxBookData> {
         if (this.mutexLock) {
-            console.log("concurrent job: ", this.jobId - 1);
             return this.currentJob;
         }
 
@@ -32,11 +31,10 @@ export class NdxBookCrawlService {
         const jobId = this.jobId;
         this.jobId++;
 
-        this.currentJob = this.crawlNasdaqData(this.config.KOYFIN_USERNAME, this.config.KOYFIN_PASSWORD).then(result => {
+        this.currentJob = this.crawlNasdaqData(this.config.getValue(CONFIG_KEY.KOYFIN_USERNAME), this.config.getValue(CONFIG_KEY.KOYFIN_PASSWORD)).then(result => {
             return this.parseString(jobId, result);
         }).finally(() => {
             this.mutexLock = false;
-            console.log(jobId);
         });
 
         return this.currentJob;
