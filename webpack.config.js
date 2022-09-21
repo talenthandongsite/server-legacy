@@ -9,7 +9,8 @@ var distPath = function ( name ) {
   	return path.join(name);
 };
 
-var webpack_opts = {
+module.exports = {
+	mode: 'production',
   	entry: './src/main.ts',
 	target: 'node',
 	output: { filename: distPath(outputName) },
@@ -41,5 +42,3 @@ var webpack_opts = {
 	},
 	externals: [ nodeExternals() ]
 };
-
-module.exports = webpack_opts;
