@@ -10,6 +10,7 @@ export class ConfigService {
     constructor(env: NodeJS.ProcessEnv) {
         Object.keys(CONFIG_KEY).forEach(key => {
             if (!env[key]) throw new Error("failed to get environment variable: " + key); 
+            console.log(key, env[key]);
             this[key] = env[key];
         });
     }
