@@ -38,5 +38,5 @@ jobs:
             npm i
             npm run build
             pm2 delete server-legacy
-            export $SERVER_ENV
+            export $(echo $SERVER_ENV)
             pm2 start dist/server-legacy.js
