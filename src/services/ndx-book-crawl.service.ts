@@ -69,7 +69,7 @@ export class NdxBookCrawlService {
         const emailInput = await page.$("input[name=email]");
         const passwordInput = await page.$("input[name=password]");
 
-        if (!emailInput || !passwordInput) throw new Error("Something went wrong while getting login form");
+        // if (!emailInput || !passwordInput) throw new Error("Something went wrong while getting login form");
 
         await emailInput.type(email);
         await passwordInput.type(password);
