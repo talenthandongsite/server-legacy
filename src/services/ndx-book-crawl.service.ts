@@ -69,20 +69,24 @@ export class NdxBookCrawlService {
         const emailInput = await page.$("input[name=email]");
         const passwordInput = await page.$("input[name=password]");
 
-        // if (!emailInput || !passwordInput) throw new Error("Something went wrong while getting login form");
+        if (!emailInput || !passwordInput) throw new Error("Something went wrong while getting login form");
 
         await emailInput.type(email);
         await passwordInput.type(password);
 
         await page.click('button[type="submit"]');
         await page.waitForNetworkIdle()
+
+        const loginIndicatorSelector = ".fa-user-circle";
+        const loginIndicator = await page.$(loginIndicatorSelector);
+        if (!loginIndicator) throw new Error("Somethings went wrong while login to website(1)");
         
         await page.goto(WATCHLIST_URL, {waitUntil: "networkidle0" });
         await page.waitForNetworkIdle()
 
         const userBlockedSelector = "div[class^=registered-users-only-message__root]";
         const userBlocked = await page.$(userBlockedSelector);
-        if (userBlocked) throw new Error("Somethings went wrong while login to website");
+        if (userBlocked) throw new Error("Somethings went wrong while login to website(2)");
 
         const firstBodyRowSelector = "div[class^=base-table-row__root]";
         await page.waitForSelector(firstBodyRowSelector);
