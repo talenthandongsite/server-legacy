@@ -27,7 +27,6 @@ jobs:
           key: ${{ secrets.SERVER_ACCESS_KEY }}
           port: 22
           script_stop: true
-          envs: SERVER_ENV
           script: |
             cd ~/.github/server-legacy
             git checkout master
@@ -48,6 +47,6 @@ jobs:
           envs: SERVER_ENV
           script: |
             cd ~/.github/server-legacy
-            pm2 delete server-legacy
+            pm2 delete server-legacy 2> /dev/null || true
             export $(echo $SERVER_ENV)
             pm2 start dist/server-legacy.js
