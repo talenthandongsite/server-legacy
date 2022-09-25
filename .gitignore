@@ -10,6 +10,7 @@ dist/
 .DS_Store
 package-lock.json
 yarn.lock
+temp
 
 # data files
 **/*.csv

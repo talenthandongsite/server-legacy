@@ -83,6 +83,7 @@ export class NdxBookCrawlService {
         //     console.log(email, password);
         //     throw new Error("Username and Password doesn't match");
         // }
+        await page.screenshot({ path: "temp/point1.jpg" });
 
         const loginIndicatorSelector = ".fa-user-circle";
         await page.waitForSelector(loginIndicatorSelector);
@@ -98,6 +99,8 @@ export class NdxBookCrawlService {
 
         const firstBodyRowSelector = "div[class^=base-table-row__root]";
         await page.waitForSelector(firstBodyRowSelector);
+
+        await page.screenshot({ path: "temp/point2.jpg" });
 
         const setTableWideViewSelector = "button:has(> i.fa-compress-wide";
         await page.click(setTableWideViewSelector);
