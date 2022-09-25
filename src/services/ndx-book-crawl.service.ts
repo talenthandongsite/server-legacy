@@ -92,7 +92,9 @@ export class NdxBookCrawlService {
         // if (!loginIndicator) throw new Error("Somethings went wrong while login to website(1)");
         
         await page.goto(WATCHLIST_URL, { waitUntil: "networkidle0" });
-        await page.waitForNetworkIdle();
+
+        await page.screenshot({ path: "temp/point2.jpg" });
+        console.log("screenshot 2 completed");
 
         const userBlockedSelector = "div[class^=registered-users-only-message__root]";
         const userBlocked = await page.$(userBlockedSelector);
@@ -101,8 +103,8 @@ export class NdxBookCrawlService {
         const firstBodyRowSelector = "div[class^=base-table-row__root]";
         await page.waitForSelector(firstBodyRowSelector);
 
-        await page.screenshot({ path: "temp/point2.jpg" });
-        console.log("screenshot 2 completed");
+        await page.screenshot({ path: "temp/point3.jpg" });
+        console.log("screenshot 3 completed");
 
         const setTableWideViewSelector = "button:has(> i.fa-compress-wide";
         await page.click(setTableWideViewSelector);
