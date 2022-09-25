@@ -4,8 +4,8 @@ import { parseAbbribiatedNumber, safeParseFloat, safeParseInt, safePercentage } 
 import { NdxBookData, NdxStock } from '../models/dtos';
 import { ConfigService, CONFIG_KEY } from './config.service';
 
-const NAVIGATION_TIMEOUT = 100000;
-const TIMEOUT = 100000;
+const NAVIGATION_TIMEOUT = 300000;
+const TIMEOUT = 300000;
 
 const LOGIN_URL = "https://app.koyfin.com/login";
 const WATCHLIST_URL = "https://app.koyfin.com/myd/4af3aeda-0dfc-417d-a102-3f4c030d10e9";
@@ -87,12 +87,10 @@ export class NdxBookCrawlService {
         console.log("screenshot 1 completed");
 
         const loginIndicatorSelector = ".fa-user-circle";
-        await page.waitForSelector(loginIndicatorSelector);
-        // const loginIndicator = await page.$(loginIndicatorSelector);
-        // if (!loginIndicator) throw new Error("Somethings went wrong while login to website(1)");
+        const loginIndicator = await page.$(loginIndicatorSelector);
+        if (!loginIndicator) throw new Error("Somethings went wrong while login to website(1)");
         
-        await page.goto(WATCHLIST_URL, { waitUntil: "networkidle0" });
-
+        await page.goto(WATCHLIST_URL);
         await page.screenshot({ path: "temp/point2.jpg" });
         console.log("screenshot 2 completed");
 
