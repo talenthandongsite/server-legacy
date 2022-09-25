@@ -74,7 +74,9 @@ export class NdxBookCrawlService {
         await emailInput.type(email);
         await passwordInput.type(password);
 
-        await page.click('button[type="submit"]');
+        const loginButton = await page.$('button[type="submit"]');
+        if (!loginButton) throw new Error("There is no login button");
+        await loginButton.click();
         await page.waitForNetworkIdle();
 
         // if (page.url() == LOGIN_URL) {
