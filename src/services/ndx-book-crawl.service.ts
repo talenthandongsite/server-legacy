@@ -75,14 +75,19 @@ export class NdxBookCrawlService {
         await passwordInput.type(password);
 
         await page.click('button[type="submit"]');
-        await page.waitForNetworkIdle()
+        await page.waitForNetworkIdle();
+
+        if (page.url() == LOGIN_URL) {
+            console.log(email, password);
+            throw new Error("Username and Password doesn't match");
+        }
 
         const loginIndicatorSelector = ".fa-user-circle";
         const loginIndicator = await page.$(loginIndicatorSelector);
         if (!loginIndicator) throw new Error("Somethings went wrong while login to website(1)");
         
         await page.goto(WATCHLIST_URL, {waitUntil: "networkidle0" });
-        await page.waitForNetworkIdle()
+        await page.waitForNetworkIdle();
 
         const userBlockedSelector = "div[class^=registered-users-only-message__root]";
         const userBlocked = await page.$(userBlockedSelector);
