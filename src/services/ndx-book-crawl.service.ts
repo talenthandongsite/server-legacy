@@ -4,7 +4,7 @@ import { parseAbbribiatedNumber, safeParseFloat, safeParseInt, safePercentage } 
 import { NdxBookData, NdxStock } from '../models/dtos';
 import { ConfigService, CONFIG_KEY } from './config.service';
 
-const NAVIGATION_TIMEOUT = 50000;
+const NAVIGATION_TIMEOUT = 100000;
 const TIMEOUT = 100000;
 
 const LOGIN_URL = "https://app.koyfin.com/login";
